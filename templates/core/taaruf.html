@@ -1,0 +1,587 @@
+{% extends 'base.html' %} {% load static %} {% block title %}FamaLine Ta'aruf
+Keluarga - Perkenalan Pranikah Syar'i{% endblock %} {% block extra_css %}
+<style>
+  .step-card {
+    transition: all 0.3s ease;
+  }
+  .step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px -12px rgba(60, 45, 40, 0.15);
+  }
+  .input-focus:focus {
+    outline: none;
+    border-color: #c97a63;
+    box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.1);
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Hero Section Ta'aruf -->
+<section id="beranda" class="relative overflow-hidden py-16 md:py-24">
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-cream-200/30 to-transparent"
+  ></div>
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="text-center md:text-left animate-slide-up">
+        <div
+          class="inline-flex items-center gap-2 bg-white/70 backdrop-blur rounded-full px-4 py-1.5 mb-6 shadow-sm"
+        >
+          <i class="fas fa-handshake text-teracotta text-sm"></i>
+          <span class="text-xs font-bold text-teracotta uppercase tracking-wide"
+            >Layanan Resmi & Syar'i</span
+          >
+        </div>
+        <h1
+          class="text-4xl md:text-5xl lg:text-6xl font-black text-charcoal mb-6 leading-tight"
+        >
+          Temukan Pasangan Hidup
+          <span class="text-teracotta">dengan Ta'aruf</span> yang Berkah
+        </h1>
+        <p class="text-gray-600 text-lg mb-8 max-w-lg mx-auto md:mx-0">
+          Program ta'aruf terpercaya untuk membangun keluarga sakinah.
+          Didampingi mediator profesional, aman, dan sesuai syariat.
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+          <a
+            href="#daftar"
+            class="bg-teracotta text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+            ><i class="fas fa-user-plus"></i> Daftar Ta'aruf</a
+          >
+          <a
+            href="#proses"
+            class="border-2 border-teracotta/40 text-teracotta px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-200 transition"
+            >Lihat Proses →</a
+          >
+        </div>
+      </div>
+      <div class="relative flex justify-center">
+        <div
+          class="w-full max-w-md aspect-square bg-gradient-to-br from-teracotta/10 via-cream-300 to-cream-200 rounded-3xl shadow-2xl flex items-center justify-center border-4 border-white/80 relative animate-float"
+        >
+          <div class="text-center p-6">
+            <i class="fas fa-heart text-6xl text-teracotta/70 mb-4"></i>
+            <p
+              class="text-warmbrown font-medium text-sm bg-white/60 px-4 py-2 rounded-full"
+            >
+              بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+            </p>
+            <p class="text-xs text-gray-500 mt-3">
+              "Dan nikahkanlah orang-orang yang sendirian di antara kamu..."
+              (QS. An-Nur: 32)
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Keunggulan Program -->
+<section id="keunggulan" class="py-20 bg-white/60">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="text-center mb-14">
+      <span
+        class="text-teracotta font-bold text-sm bg-cream-200 px-4 py-1 rounded-full"
+        >Mengapa Memilih Kami?</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-3">
+        Keunggulan Program Ta'aruf
+      </h2>
+      <p class="text-gray-500 mt-2 max-w-2xl mx-auto">
+        Proses yang aman, terjaga privasinya, dan fokus pada kesiapan membangun
+        keluarga
+      </p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div
+        class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition"
+      >
+        <div
+          class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="fas fa-shield-alt text-3xl text-teracotta"></i>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Aman & Terjaga</h3>
+        <p class="text-gray-500 text-sm">
+          Privasi peserta dijaga penuh, data tidak disebarluaskan tanpa izin.
+        </p>
+      </div>
+      <div
+        class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition"
+      >
+        <div
+          class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="fas fa-chalkboard-user text-3xl text-teracotta"></i>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Mediator Berpengalaman</h3>
+        <p class="text-gray-500 text-sm">
+          Didampingi konselor pernikahan profesional yang memahami syariat.
+        </p>
+      </div>
+      <div
+        class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition"
+      >
+        <div
+          class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="fas fa-clipboard-list text-3xl text-teracotta"></i>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Screening Kompatibilitas</h3>
+        <p class="text-gray-500 text-sm">
+          Pemetaan visi misi & kesiapan pernikahan sebelum proses ta'aruf.
+        </p>
+      </div>
+      <div
+        class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition"
+      >
+        <div
+          class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"
+        >
+          <i class="fas fa-mosque text-3xl text-teracotta"></i>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Bimbingan Pranikah</h3>
+        <p class="text-gray-500 text-sm">
+          Modul persiapan pernikahan & pola asuh untuk calon orang tua.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Proses Ta'aruf -->
+<section id="proses" class="py-20 bg-gradient-to-b from-cream-100 to-white">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="text-center mb-14">
+      <span
+        class="text-teracotta font-bold text-sm bg-cream-200 px-4 py-1 rounded-full"
+        >Panduan Langkah</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-3">
+        Bagaimana Proses Ta'aruf?
+      </h2>
+      <p class="text-gray-500 mt-2">
+        Mudah, sistematis, dan tetap menjaga adab serta privasi
+      </p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div
+        class="step-card bg-white rounded-2xl p-6 text-center border border-cream-200 shadow-sm relative"
+      >
+        <div
+          class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-teracotta text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          1
+        </div>
+        <div class="mt-6">
+          <i class="fas fa-file-alt text-4xl text-teracotta/70 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2">Pendaftaran & Verifikasi</h3>
+          <p class="text-gray-500 text-sm">
+            Isi formulir data diri & kelengkapan dokumen. Tim kami akan
+            verifikasi dalam 1x24 jam.
+          </p>
+        </div>
+      </div>
+      <div
+        class="step-card bg-white rounded-2xl p-6 text-center border border-cream-200 shadow-sm relative"
+      >
+        <div
+          class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-teracotta text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          2
+        </div>
+        <div class="mt-6">
+          <i class="fas fa-users text-4xl text-teracotta/70 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2">Konsultasi & Profiling</h3>
+          <p class="text-gray-500 text-sm">
+            Sesi profiling visi keluarga, preferensi pasangan, dan konsultasi
+            mediator.
+          </p>
+        </div>
+      </div>
+      <div
+        class="step-card bg-white rounded-2xl p-6 text-center border border-cream-200 shadow-sm relative"
+      >
+        <div
+          class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-teracotta text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          3
+        </div>
+        <div class="mt-6">
+          <i class="fas fa-handshake text-4xl text-teracotta/70 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2">Pertemuan Ta'aruf</h3>
+          <p class="text-gray-500 text-sm">
+            Dipertemukan dengan pasangan yang sesuai kriteria, didampingi
+            mediator untuk proses ta'aruf syar'i.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8 mt-8">
+      <div
+        class="step-card bg-white rounded-2xl p-6 text-center border border-cream-200 shadow-sm relative"
+      >
+        <div
+          class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-teracotta text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          4
+        </div>
+        <div class="mt-6">
+          <i class="fas fa-comments text-4xl text-teracotta/70 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2">Pendalaman & Komunikasi</h3>
+          <p class="text-gray-500 text-sm">
+            Sesi komunikasi terarah dengan pendamping, diskusi tentang kesiapan
+            pernikahan & pola asuh.
+          </p>
+        </div>
+      </div>
+      <div
+        class="step-card bg-white rounded-2xl p-6 text-center border border-cream-200 shadow-sm relative"
+      >
+        <div
+          class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-teracotta text-white rounded-full flex items-center justify-center font-bold text-xl shadow-md"
+        >
+          5
+        </div>
+        <div class="mt-6">
+          <i class="fas fa-ring text-4xl text-teracotta/70 mb-4"></i>
+          <h3 class="font-bold text-xl mb-2">Kesepakatan & Khitbah</h3>
+          <p class="text-gray-500 text-sm">
+            Jika cocok, mediator memfasilitasi proses khitbah (lamaran) dan
+            bimbingan pra-nikah.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Form Pendaftaran Ta'aruf -->
+<section id="daftar" class="py-20 bg-cream-200/30">
+  <div class="max-w-5xl mx-auto px-5 lg:px-8">
+    <div
+      class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-cream-200"
+    >
+      <div
+        class="bg-gradient-to-r from-teracotta to-warmbrown px-6 py-8 md:px-10 text-white"
+      >
+        <h2 class="text-2xl md:text-3xl font-bold text-center">
+          <i class="fas fa-user-plus mr-2"></i> Formulir Pendaftaran Ta'aruf
+        </h2>
+        <p class="text-center text-white/80 text-sm mt-2">
+          Isi data dengan jujur dan lengkap. Data Anda akan dijaga
+          kerahasiaannya.
+        </p>
+      </div>
+      <form
+        method="post"
+        action="{% url 'core:taaruf' %}"
+        class="p-6 md:p-10 space-y-6"
+      >
+        {% csrf_token %}
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-user text-teracotta mr-1"></i> Nama Lengkap
+              <span class="text-red-500">*</span></label
+            ><input
+              type="text"
+              name="nama_lengkap"
+              id="namaLengkap"
+              required
+              class="w-full px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 transition-all"
+              placeholder="Nama sesuai KTP"
+            />
+            <p class="text-xs text-red-400 hidden mt-1" id="errorNama"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-venus-mars text-teracotta mr-1"></i> Jenis
+              Kelamin <span class="text-red-500">*</span></label
+            >
+            <div class="flex gap-6">
+              <label class="flex items-center gap-2"
+                ><input
+                  type="radio"
+                  name="jenis_kelamin"
+                  value="Pria"
+                  class="w-4 h-4 text-teracotta"
+                  required
+                />
+                <span>Pria</span></label
+              ><label class="flex items-center gap-2"
+                ><input
+                  type="radio"
+                  name="jenis_kelamin"
+                  value="Wanita"
+                  class="w-4 h-4 text-teracotta"
+                />
+                <span>Wanita</span></label
+              >
+            </div>
+            <p class="text-xs text-red-400 hidden mt-1" id="errorJk"></p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-calendar-alt text-teracotta mr-1"></i> Tanggal
+              Lahir</label
+            ><input
+              type="date"
+              name="tanggal_lahir"
+              id="tglLahir"
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-map-marker-alt text-teracotta mr-1"></i>
+              Domisili (Kota)</label
+            ><input
+              type="text"
+              name="domisili"
+              id="domisili"
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+              placeholder="Contoh: Jakarta Selatan"
+            />
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-envelope text-teracotta mr-1"></i> Email
+              <span class="text-red-500">*</span></label
+            ><input
+              type="email"
+              name="email"
+              id="emailTaaruf"
+              required
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+              placeholder="email@example.com"
+            />
+            <p class="text-xs text-red-400 hidden mt-1" id="errorEmail"></p>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fab fa-whatsapp text-teracotta mr-1"></i> No. WhatsApp
+              <span class="text-red-500">*</span></label
+            ><input
+              type="tel"
+              name="whatsapp"
+              id="waTaaruf"
+              required
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+              placeholder="08xxxxxxxxxx"
+            />
+            <p class="text-xs text-red-400 hidden mt-1" id="errorWa"></p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-briefcase text-teracotta mr-1"></i>
+              Pekerjaan</label
+            ><input
+              type="text"
+              name="pekerjaan"
+              id="pekerjaan"
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+              placeholder="Pekerjaan saat ini"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-gray-700 mb-2"
+              ><i class="fas fa-graduation-cap text-teracotta mr-1"></i>
+              Pendidikan Terakhir</label
+            ><select
+              name="pendidikan"
+              id="pendidikan"
+              class="w-full px-4 py-3 rounded-xl border border-cream-300"
+            >
+              <option value="">Pilih</option>
+              <option>SMA/Sederajat</option>
+              <option>D3</option>
+              <option>S1</option>
+              <option>S2</option>
+              <option>S3</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2"
+            ><i class="fas fa-heart text-teracotta mr-1"></i> Kriteria Pasangan
+            yang Diharapkan</label
+          ><textarea
+            name="kriteria"
+            id="kriteria"
+            rows="3"
+            class="w-full px-4 py-3 rounded-xl border border-cream-300"
+            placeholder="Sebutkan kriteria umum: usia, karakter, visi keluarga, kesiapan pernikahan, dll..."
+          ></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2"
+            ><i class="fas fa-check-circle text-teracotta mr-1"></i> Kesediaan &
+            Persetujuan</label
+          >
+          <div class="space-y-2">
+            <label class="flex items-start gap-3"
+              ><input
+                type="checkbox"
+                id="setujuSyarat"
+                class="mt-1 w-4 h-4 text-teracotta"
+              />
+              <span class="text-sm text-gray-600"
+                >Saya menyatakan bahwa data yang saya berikan adalah benar dan
+                bersedia mengikuti prosedur ta'aruf yang berlaku serta menjaga
+                adab syar'i.</span
+              ></label
+            >
+            <p class="text-xs text-red-400 hidden mt-1" id="errorSyarat"></p>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-teracotta text-white font-bold py-4 rounded-xl hover:shadow-xl transition-all transform hover:scale-[1.01] flex items-center justify-center gap-3 text-lg"
+        >
+          <i class="fas fa-paper-plane"></i> Daftar Ta'aruf Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Testimoni -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8 text-center">
+    <h2 class="text-3xl font-bold text-charcoal mb-4">
+      Apa Kata Mereka yang Telah Menikah?
+    </h2>
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-8">
+      <div class="bg-cream-100 p-6 rounded-2xl">
+        <i class="fas fa-quote-left text-teracotta/40 text-3xl"></i>
+        <p class="text-gray-600 mt-2 italic">
+          "Proses ta'aruf di AsuhBijak sangat membantu kami menemukan visi yang
+          sama tentang keluarga. Mediatornya sabar dan profesional."
+        </p>
+        <div class="font-bold mt-4">— Rina & Arman</div>
+        <div class="text-yellow-400 text-sm">★★★★★</div>
+      </div>
+      <div class="bg-cream-100 p-6 rounded-2xl">
+        <i class="fas fa-quote-left text-teracotta/40 text-3xl"></i>
+        <p class="text-gray-600 mt-2 italic">
+          "Alhamdulillah, kami sekarang sudah menikah. Terima kasih AsuhBijak
+          yang telah memfasilitasi ta'aruf yang syar'i dan penuh berkah."
+        </p>
+        <div class="font-bold mt-4">— Siti & Fajar</div>
+        <div class="text-yellow-400 text-sm">★★★★★</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Sukses -->
+<div
+  id="successModalTaaruf"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all"
+>
+  <div
+    class="bg-white rounded-2xl p-8 max-w-md text-center mx-4 animate-slide-up"
+  >
+    <div
+      class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+    >
+      <i class="fas fa-check text-4xl text-green-500"></i>
+    </div>
+    <h3 class="text-2xl font-bold text-charcoal mb-2">Pendaftaran Berhasil!</h3>
+    <p class="text-gray-500 mb-4">
+      Tim mediator kami akan menghubungi Anda dalam 1x24 jam melalui
+      WhatsApp/Email. Mohon bersiap untuk sesi verifikasi data.
+    </p>
+    <button
+      id="closeModalTaaruf"
+      class="bg-teracotta text-white px-6 py-2.5 rounded-xl font-semibold w-full"
+    >
+      Tutup
+    </button>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  const form = document.getElementById("taarufForm");
+  const modal = document.getElementById("successModalTaaruf");
+  const closeBtn = document.getElementById("closeModalTaaruf");
+
+  function hideAllErrors() {
+    document
+      .querySelectorAll(".text-red-400")
+      .forEach((el) => el.classList.add("hidden"));
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    hideAllErrors();
+    let isValid = true;
+
+    const nama = document.getElementById("namaLengkap").value.trim();
+    if (!nama) {
+      document.getElementById("errorNama").classList.remove("hidden");
+      document.getElementById("errorNama").innerText =
+        "Nama lengkap wajib diisi";
+      isValid = false;
+    }
+
+    const jkRadios = document.querySelectorAll('input[name="jenis_kelamin"]');
+    const jkChecked = [...jkRadios].some((r) => r.checked);
+    if (!jkChecked) {
+      document.getElementById("errorJk").classList.remove("hidden");
+      document.getElementById("errorJk").innerText = "Pilih jenis kelamin";
+      isValid = false;
+    }
+
+    const email = document.getElementById("emailTaaruf").value.trim();
+    if (!email) {
+      document.getElementById("errorEmail").classList.remove("hidden");
+      document.getElementById("errorEmail").innerText = "Email harus diisi";
+      isValid = false;
+    } else if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(email)) {
+      document.getElementById("errorEmail").classList.remove("hidden");
+      document.getElementById("errorEmail").innerText =
+        "Format email tidak valid";
+      isValid = false;
+    }
+
+    const wa = document.getElementById("waTaaruf").value.trim();
+    if (!wa) {
+      document.getElementById("errorWa").classList.remove("hidden");
+      document.getElementById("errorWa").innerText =
+        "Nomor WhatsApp wajib diisi";
+      isValid = false;
+    } else if (!/^[0-9]{10,13}$/.test(wa)) {
+      document.getElementById("errorWa").classList.remove("hidden");
+      document.getElementById("errorWa").innerText =
+        "Nomor HP harus 10-13 digit angka";
+      isValid = false;
+    }
+
+    const setuju = document.getElementById("setujuSyarat").checked;
+    if (!setuju) {
+      document.getElementById("errorSyarat").classList.remove("hidden");
+      document.getElementById("errorSyarat").innerText =
+        "Harap setuju dengan persyaratan ta'aruf";
+      isValid = false;
+    }
+
+    if (isValid) {
+      modal.classList.remove("hidden");
+      form.submit();
+    }
+  });
+
+  closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
+</script>
+{% endblock %}

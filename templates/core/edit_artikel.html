@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Artikel - FamaLine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-input:focus {
+        outline: none;
+        border-color: #C97A63;
+        box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.1);
+    }
+    .preview-box {
+        background: #FFFDF9;
+        border: 1px solid #F5E6C9;
+        border-radius: 12px;
+        padding: 16px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .preview-box h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #3D3A35;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .preview-box p {
+        color: #4B5563;
+        line-height: 1.6;
+        margin-bottom: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-5 lg:px-8 py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{% url 'core:manage_artikel' %}" class="hover:text-teracotta transition">
+            Manajemen Artikel
+        </a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="text-teracotta font-medium">Edit Artikel</span>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-cream-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5 text-white">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-edit text-2xl"></i>
+                <div>
+                    <h1 class="text-xl font-bold">Edit Artikel</h1>
+                    <p class="text-white/80 text-sm">Perbarui informasi artikel Anda</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 md:p-8">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Judul -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Judul Artikel <span class="text-red-500">*</span></label>
+                        <input type="text" name="judul" id="judul" required value="{{ artikel.judul }}" 
+                               class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta transition">
+                    </div>
+
+                    <!-- Kategori -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+                        <select name="kategori" id="kategori" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta transition">
+                            <option value="balita" {% if artikel.kategori == 'balita' %}selected{% endif %}>👶 Balita & Anak</option>
+                            <option value="psikologi" {% if artikel.kategori == 'psikologi' %}selected{% endif %}>🧠 Psikologi Anak</option>
+                            <option value="remaja" {% if artikel.kategori == 'remaja' %}selected{% endif %}>📱 Remaja & Digital</option>
+                            <option value="keluarga" {% if artikel.kategori == 'keluarga' %}selected{% endif %}>❤️ Keluarga Sakinah</option>
+                        </select>
+                    </div>
+
+                    <!-- Konten -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Konten Artikel <span class="text-red-500">*</span></label>
+                        <textarea name="konten" id="konten" rows="15" required 
+                                  class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta transition font-mono text-sm">{{ artikel.konten }}</textarea>
+                        <div class="flex flex-wrap gap-4 mt-2 text-xs text-gray-400">
+                            <span><i class="fas fa-code"></i> Gunakan &lt;h2&gt; untuk sub judul</span>
+                            <span><i class="fas fa-list"></i> Gunakan &lt;ul&gt; & &lt;li&gt; untuk daftar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Preview -->
+                    <div class="bg-cream-50 rounded-xl p-5 border border-cream-200">
+                        <h3 class="font-bold text-charcoal mb-3 flex items-center gap-2">
+                            <i class="fas fa-eye text-teracotta"></i> Preview
+                        </h3>
+                        <div class="preview-box" id="previewBox">
+                            <p class="text-gray-400 text-center">Preview akan muncul di sini...</p>
+                        </div>
+                    </div>
+
+                    <!-- Penulis -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Penulis</label>
+                        <input type="text" name="penulis" id="penulis" value="{{ artikel.penulis }}" 
+                               class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta transition">
+                    </div>
+
+                    <!-- Tombol -->
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-1 bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md">
+                            <i class="fas fa-save mr-2"></i> Simpan
+                        </button>
+                        <a href="{% url 'core:manage_artikel' %}" class="px-6 py-3 border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition">
+                            Batal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Live Preview
+    const judulInput = document.getElementById('judul');
+    const kontenInput = document.getElementById('konten');
+    const previewBox = document.getElementById('previewBox');
+    
+    function updatePreview() {
+        const judul = judulInput.value;
+        const konten = kontenInput.value;
+        
+        let previewHtml = '';
+        if (judul) {
+            previewHtml += `<h2 style="font-size: 1.5rem; font-weight: 700; color: #3D3A35; margin-bottom: 0.75rem;">${escapeHtml(judul)}</h2>`;
+        }
+        if (konten) {
+            previewHtml += `<div>${konten}</div>`;
+        } else {
+            previewHtml += '<p class="text-gray-400 text-center">Konten akan muncul di sini...</p>';
+        }
+        previewBox.innerHTML = previewHtml;
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    judulInput.addEventListener('input', updatePreview);
+    kontenInput.addEventListener('input', updatePreview);
+    updatePreview();
+</script>
+{% endblock %}

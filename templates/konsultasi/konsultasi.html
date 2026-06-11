@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FamaLine | Konsultasi Parenting & Psikologi - Konsultasi Online dengan Ahli{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .psychologist-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .psychologist-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 30px -12px rgba(60, 45, 40, 0.2);
+    }
+    .selected-card {
+        border: 2px solid #C97A63;
+        background: #FFFDF9;
+        box-shadow: 0 10px 25px -5px rgba(201, 122, 99, 0.2);
+    }
+    .input-focus:focus {
+        outline: none;
+        border-color: #C97A63;
+        box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.1);
+    }
+    .time-slot {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .time-slot.selected {
+        background-color: #C97A63;
+        color: white;
+        border-color: #C97A63;
+    }
+    .whatsapp-float {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 100;
+        animation: pulse-wa 2s infinite;
+    }
+    .whatsapp-float:hover {
+        animation: none;
+        transform: scale(1.05);
+    }
+    @keyframes pulse-wa {
+        0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+        70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+    }
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section Konsultasi -->
+<section id="beranda" class="relative overflow-hidden py-16 md:py-24">
+    <div class="absolute inset-0 bg-gradient-to-r from-cream-200/30 to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="text-center md:text-left animate-slide-up">
+                <div class="inline-flex items-center gap-2 bg-white/70 backdrop-blur rounded-full px-4 py-1.5 mb-6 shadow-sm">
+                    <i class="fas fa-headset text-teracotta text-sm"></i>
+                    <span class="text-xs font-bold text-teracotta uppercase tracking-wide">Konsultasi 1-on-1 dengan Ahli</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-charcoal mb-6 leading-tight">
+                    Konsultasi Parenting & <span class="text-teracotta">Psikologi Anak</span>
+                </h1>
+                <p class="text-gray-600 text-lg mb-8 max-w-lg mx-auto md:mx-0">
+                    Dapatkan solusi praktis untuk tantangan pengasuhan Anda. Sesi privat bersama psikolog dan praktisi parenting berpengalaman.
+                </p>
+                <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <a href="#booking" class="bg-teracotta text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"><i class="fas fa-calendar-check"></i> Booking Sekarang</a>
+                    <a href="#psikolog" class="border-2 border-teracotta/40 text-teracotta px-8 py-3.5 rounded-xl font-semibold hover:bg-cream-200 transition">Lihat Pakar →</a>
+                </div>
+            </div>
+            <div class="relative flex justify-center">
+                <div class="w-full max-w-md aspect-square bg-gradient-to-br from-teracotta/10 via-cream-300 to-cream-200 rounded-3xl shadow-2xl flex items-center justify-center border-4 border-white/80 relative animate-float">
+                    <div class="text-center p-6">
+                        <i class="fas fa-chalkboard-user text-6xl text-teracotta/70 mb-4"></i>
+                        <p class="text-warmbrown font-medium text-sm bg-white/60 px-4 py-2 rounded-full">Sesi Konsultasi Privat</p>
+                        <p class="text-xs text-gray-500 mt-3">Via Video Call / Chat / Telepon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Layanan Konsultasi -->
+<section id="layanan" class="py-20 bg-white/60">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="text-center mb-14">
+            <span class="text-teracotta font-bold text-sm bg-cream-200 px-4 py-1 rounded-full">Pilihan Layanan</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-3">Sesi Konsultasi yang Tersedia</h2>
+            <p class="text-gray-500 mt-2 max-w-2xl mx-auto">Pilih metode yang paling nyaman untuk Anda</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition">
+                <div class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-video text-3xl text-teracotta"></i></div>
+                <h3 class="font-bold text-lg mb-2">Video Call</h3>
+                <p class="text-gray-500 text-sm">Sesi面对面 via Zoom/Google Meet. Tatap muka langsung dengan psikolog.</p>
+                <div class="mt-3 text-teracotta font-bold">Rp175k/60 menit</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition">
+                <div class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-comment-dots text-3xl text-teracotta"></i></div>
+                <h3 class="font-bold text-lg mb-2">Chat Konsultasi</h3>
+                <p class="text-gray-500 text-sm">Konsultasi via chat teks. Fleksibel, bisa kapan saja, jawaban dari ahli.</p>
+                <div class="mt-3 text-teracotta font-bold">Rp125k/24 jam</div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 text-center shadow-md border border-cream-200 hover:shadow-lg transition">
+                <div class="w-16 h-16 bg-teracotta/10 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-phone-alt text-3xl text-teracotta"></i></div>
+                <h3 class="font-bold text-lg mb-2">Konsultasi Telepon</h3>
+                <p class="text-gray-500 text-sm">Sesi telepon langsung dengan psikolog. Praktis dan personal.</p>
+                <div class="mt-3 text-teracotta font-bold">Rp150k/45 menit</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Daftar Psikolog / Pakar -->
+<section id="psikolog" class="py-20 bg-gradient-to-b from-cream-100 to-white">
+    <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div class="text-center mb-14">
+            <span class="text-teracotta font-bold text-sm bg-cream-200 px-4 py-1 rounded-full">Pakar Kami</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-3">Psikolog & Praktisi Parenting</h2>
+            <p class="text-gray-500 mt-2">Pilih ahli sesuai kebutuhan dan preferensi Anda</p>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Psikolog 1 -->
+            <div class="psychologist-card bg-white rounded-2xl overflow-hidden shadow-md border border-cream-200" data-psikolog="Dr. Sari Wijaya, M.Psi">
+                <div class="h-40 bg-gradient-to-r from-teracotta/20 to-cream-300 flex items-center justify-center">
+                    <i class="fas fa-user-circle text-6xl text-teracotta/50"></i>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-xl text-charcoal">Dr. Sari Wijaya, M.Psi</h3>
+                    <p class="text-teracotta text-sm font-semibold mb-2">Psikolog Anak & Keluarga</p>
+                    <p class="text-gray-500 text-xs">Pengalaman 12+ tahun. Spesialisasi: tantrum, tumbuh kembang, dan komunikasi orang tua-anak.</p>
+                    <div class="flex items-center gap-1 mt-3 text-yellow-400 text-sm">★★★★★ <span class="text-gray-400 text-xs ml-1">(128 ulasan)</span></div>
+                </div>
+            </div>
+            <!-- Psikolog 2 -->
+            <div class="psychologist-card bg-white rounded-2xl overflow-hidden shadow-md border border-cream-200" data-psikolog="Dr. Ahmad Fauzi, S.Psi">
+                <div class="h-40 bg-gradient-to-r from-teracotta/20 to-cream-300 flex items-center justify-center">
+                    <i class="fas fa-user-circle text-6xl text-teracotta/50"></i>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-xl text-charcoal">Dr. Ahmad Fauzi, S.Psi</h3>
+                    <p class="text-teracotta text-sm font-semibold mb-2">Psikolog Remaja & Pendidikan</p>
+                    <p class="text-gray-500 text-xs">Spesialisasi: remaja, bullying, kecanduan gadget, dan prestasi akademik.</p>
+                    <div class="flex items-center gap-1 mt-3 text-yellow-400 text-sm">★★★★★ <span class="text-gray-400 text-xs ml-1">(95 ulasan)</span></div>
+                </div>
+            </div>
+            <!-- Psikolog 3 -->
+            <div class="psychologist-card bg-white rounded-2xl overflow-hidden shadow-md border border-cream-200" data-psikolog="Maya Rizki, M.Psi">
+                <div class="h-40 bg-gradient-to-r from-teracotta/20 to-cream-300 flex items-center justify-center">
+                    <i class="fas fa-user-circle text-6xl text-teracotta/50"></i>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-xl text-charcoal">Maya Rizki, M.Psi</h3>
+                    <p class="text-teracotta text-sm font-semibold mb-2">Psikolog Perkembangan</p>
+                    <p class="text-gray-500 text-xs">Fokus pada anak usia dini, stimulasi kognitif, dan deteksi dini keterlambatan perkembangan.</p>
+                    <div class="flex items-center gap-1 mt-3 text-yellow-400 text-sm">★★★★★ <span class="text-gray-400 text-xs ml-1">(204 ulasan)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Form Booking Konsultasi -->
+<section id="booking" class="py-20 bg-cream-200/30">
+    <div class="max-w-5xl mx-auto px-5 lg:px-8">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-cream-200">
+            <div class="bg-gradient-to-r from-teracotta to-warmbrown px-6 py-8 md:px-10 text-white">
+                <h2 class="text-2xl md:text-3xl font-bold text-center"><i class="fas fa-calendar-alt mr-2"></i> Booking Konsultasi</h2>
+                <p class="text-center text-white/80 text-sm mt-2">Isi data diri dan pilih jadwal konsultasi yang tersedia</p>
+            </div>
+            
+            <form id="konsultasiForm" method="post" action="{% url 'core:konsultasi' %}" class="p-6 md:p-10 space-y-6">
+                {% csrf_token %}
+                <!-- Pilih Psikolog -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-user-md text-teracotta mr-1"></i> Pilih Psikolog <span class="text-red-500">*</span></label>
+                    <input type="text" name="psikolog" id="selectedPsikolog" readonly required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50 cursor-pointer" placeholder="Klik kartu psikolog di atas untuk memilih">
+                    <p class="text-xs text-red-400 hidden mt-1" id="errorPsikolog"></p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-user text-teracotta mr-1"></i> Nama Lengkap <span class="text-red-500">*</span></label><input type="text" name="nama" id="namaKlien" required class="w-full px-4 py-3 rounded-xl border border-cream-300 input-focus" placeholder="Nama lengkap Anda"><p class="text-xs text-red-400 hidden mt-1" id="errorNama"></p></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-envelope text-teracotta mr-1"></i> Email <span class="text-red-500">*</span></label><input type="email" name="email" id="emailKlien" required class="w-full px-4 py-3 rounded-xl border border-cream-300 input-focus" placeholder="email@example.com"><p class="text-xs text-red-400 hidden mt-1" id="errorEmail"></p></div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fab fa-whatsapp text-teracotta mr-1"></i> No. WhatsApp <span class="text-red-500">*</span></label><input type="tel" name="whatsapp" id="waKlien" required class="w-full px-4 py-3 rounded-xl border border-cream-300 input-focus" placeholder="08xxxxxxxxxx"><p class="text-xs text-red-400 hidden mt-1" id="errorWa"></p></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-child text-teracotta mr-1"></i> Usia Anak (jika ada)</label><input type="text" name="usia_anak" id="usiaAnak" class="w-full px-4 py-3 rounded-xl border border-cream-300 input-focus" placeholder="Contoh: 3 tahun, 7 tahun"></div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-calendar-day text-teracotta mr-1"></i> Pilih Tanggal <span class="text-red-500">*</span></label><input type="text" name="tanggal" id="tanggalKonsultasi" readonly required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-white cursor-pointer input-focus" placeholder="Pilih tanggal"><p class="text-xs text-red-400 hidden mt-1" id="errorTanggal"></p></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-clock text-teracotta mr-1"></i> Pilih Waktu <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-3 gap-2" id="timeSlotsContainer">
+                            <button type="button" data-time="09:00" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">09:00</button>
+                            <button type="button" data-time="10:30" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">10:30</button>
+                            <button type="button" data-time="13:00" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">13:00</button>
+                            <button type="button" data-time="14:30" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">14:30</button>
+                            <button type="button" data-time="16:00" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">16:00</button>
+                            <button type="button" data-time="19:00" class="time-slot px-3 py-2 text-sm border border-cream-300 rounded-lg hover:bg-cream-100 transition">19:00</button>
+                        </div>
+                        <input type="hidden" name="waktu" id="selectedTime" required>
+                        <p class="text-xs text-red-400 hidden mt-1" id="errorWaktu"></p>
+                    </div>
+                </div>
+                
+                <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-comment text-teracotta mr-1"></i> Topik Konsultasi / Keluhan <span class="text-red-500">*</span></label><textarea name="topik" id="topikKonsultasi" rows="3" required class="w-full px-4 py-3 rounded-xl border border-cream-300 input-focus" placeholder="Ceritakan secara singkat tantangan atau pertanyaan Anda..."></textarea><p class="text-xs text-red-400 hidden mt-1" id="errorTopik"></p></div>
+                
+                <div><label class="block text-sm font-bold text-gray-700 mb-2"><i class="fas fa-credit-card text-teracotta mr-1"></i> Metode Konsultasi <span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-4">
+                        <label class="flex items-center gap-2"><input type="radio" name="metode" value="Video Call" class="w-4 h-4 text-teracotta"> <span>Video Call (Rp175k)</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="metode" value="Chat Konsultasi"> <span>Chat Konsultasi (Rp125k)</span></label>
+                        <label class="flex items-center gap-2"><input type="radio" name="metode" value="Telepon"> <span>Telepon (Rp150k)</span></label>
+                    </div>
+                    <p class="text-xs text-red-400 hidden mt-1" id="errorMetode"></p>
+                </div>
+                
+                <button type="submit" class="w-full bg-teracotta text-white font-bold py-4 rounded-xl hover:shadow-xl transition-all transform hover:scale-[1.01] flex items-center justify-center gap-3 text-lg"><i class="fas fa-paper-plane"></i> Booking Konsultasi</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-5 lg:px-8">
+        <h2 class="text-3xl font-bold text-charcoal text-center mb-8">Pertanyaan Umum</h2>
+        <div class="space-y-4">
+            <div class="bg-cream-100 rounded-xl p-5"><h3 class="font-bold text-charcoal mb-2"><i class="fas fa-question-circle text-teracotta mr-2"></i> Bagaimana proses konsultasi?</h3><p class="text-gray-600 text-sm">Setelah booking, Anda akan menerima konfirmasi via WhatsApp. Link konsultasi (Zoom/Google Meet) akan dikirimkan H-1 sesi.</p></div>
+            <div class="bg-cream-100 rounded-xl p-5"><h3 class="font-bold text-charcoal mb-2"><i class="fas fa-lock text-teracotta mr-2"></i> Apakah data saya dijamin kerahasiaannya?</h3><p class="text-gray-600 text-sm">Ya, seluruh data dan sesi konsultasi bersifat rahasia dan dilindungi sesuai kode etik psikologi.</p></div>
+            <div class="bg-cream-100 rounded-xl p-5"><h3 class="font-bold text-charcoal mb-2"><i class="fas fa-clock text-teracotta mr-2"></i> Bisa reschedule atau refund?</h3><p class="text-gray-600 text-sm">Reschedule gratis maksimal H-1. Pembatalan di luar ketentuan dikenakan biaya administrasi.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Sukses Booking -->
+<div id="successModalKonsultasi" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+    <div class="bg-white rounded-2xl p-8 max-w-md text-center mx-4 animate-slide-up">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-4xl text-green-500"></i></div>
+        <h3 class="text-2xl font-bold text-charcoal mb-2">Booking Berhasil!</h3>
+        <p class="text-gray-500 mb-4">Terima kasih telah melakukan booking konsultasi. Tim kami akan menghubungi Anda melalui WhatsApp dalam 1x24 jam untuk konfirmasi jadwal dan link konsultasi.</p>
+        <button id="closeModalKonsul" class="bg-teracotta text-white px-6 py-2.5 rounded-xl font-semibold w-full">Tutup</button>
+    </div>
+</div>
+
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/6281234567890?text=Halo%20AsuhBijak%2C%20saya%20ingin%20konsultasi%20parenting" target="_blank" class="whatsapp-float bg-green-500 rounded-full p-4 shadow-xl hover:shadow-2xl transition-all flex items-center gap-2 fixed bottom-6 right-6 z-50">
+    <i class="fab fa-whatsapp text-white text-2xl"></i>
+    <span class="text-white text-sm font-semibold hidden md:inline">Chat Kami</span>
+</a>
+
+<!-- Back to Top Button -->
+<button id="backToTop" class="back-to-top bg-teracotta text-white rounded-full p-3 shadow-lg hover:bg-warmbrown transition-all fixed bottom-6 left-6 z-50">
+    <i class="fas fa-arrow-up text-xl"></i>
+</button>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+<script>
+    // Flatpickr date picker
+    flatpickr("#tanggalKonsultasi", {
+        locale: "id",
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        disable: [
+            function(date) {
+                // disable weekend (Sabtu & Minggu)
+                return date.getDay() === 0 || date.getDay() === 6;
+            }
+        ],
+        altInput: true,
+        altFormat: "j F Y",
+        placeholder: "Pilih tanggal (Senin-Jumat)"
+    });
+
+    // Select Psychologist from card
+    const psyCards = document.querySelectorAll('.psychologist-card');
+    const psyInput = document.getElementById('selectedPsikolog');
+    psyCards.forEach(card => {
+        card.addEventListener('click', function() {
+            psyCards.forEach(c => c.classList.remove('selected-card'));
+            this.classList.add('selected-card');
+            const namaPsikolog = this.getAttribute('data-psikolog');
+            psyInput.value = namaPsikolog;
+            document.getElementById('errorPsikolog')?.classList.add('hidden');
+        });
+    });
+
+    // Time slot selection
+    const timeSlots = document.querySelectorAll('.time-slot');
+    let selectedTimeVal = '';
+    timeSlots.forEach(slot => {
+        slot.addEventListener('click', function() {
+            timeSlots.forEach(s => s.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedTimeVal = this.getAttribute('data-time');
+            document.getElementById('selectedTime').value = selectedTimeVal;
+            document.getElementById('errorWaktu')?.classList.add('hidden');
+        });
+    });
+
+    // Form submission
+    const form = document.getElementById('konsultasiForm');
+    const modal = document.getElementById('successModalKonsultasi');
+    const closeModalBtn = document.getElementById('closeModalKonsul');
+
+    function hideErrors() {
+        document.querySelectorAll('.text-red-400').forEach(el => el.classList.add('hidden'));
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        hideErrors();
+        let isValid = true;
+
+        const psikolog = psyInput.value.trim();
+        if (!psikolog) { document.getElementById('errorPsikolog').classList.remove('hidden'); document.getElementById('errorPsikolog').innerText = 'Pilih psikolog terlebih dahulu'; isValid = false; }
+
+        const nama = document.getElementById('namaKlien').value.trim();
+        if (!nama) { document.getElementById('errorNama').classList.remove('hidden'); document.getElementById('errorNama').innerText = 'Nama lengkap wajib diisi'; isValid = false; }
+
+        const email = document.getElementById('emailKlien').value.trim();
+        if (!email) { document.getElementById('errorEmail').classList.remove('hidden'); document.getElementById('errorEmail').innerText = 'Email harus diisi'; isValid = false; }
+        else if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(email)) { document.getElementById('errorEmail').classList.remove('hidden'); document.getElementById('errorEmail').innerText = 'Format email tidak valid'; isValid = false; }
+
+        const wa = document.getElementById('waKlien').value.trim();
+        if (!wa) { document.getElementById('errorWa').classList.remove('hidden'); document.getElementById('errorWa').innerText = 'Nomor WhatsApp wajib diisi'; isValid = false; }
+        else if (!/^[0-9]{10,13}$/.test(wa)) { document.getElementById('errorWa').classList.remove('hidden'); document.getElementById('errorWa').innerText = 'Nomor HP harus 10-13 digit'; isValid = false; }
+
+        const tanggal = document.getElementById('tanggalKonsultasi').value;
+        if (!tanggal) { document.getElementById('errorTanggal').classList.remove('hidden'); document.getElementById('errorTanggal').innerText = 'Pilih tanggal konsultasi'; isValid = false; }
+
+        const waktu = document.getElementById('selectedTime').value;
+        if (!waktu) { document.getElementById('errorWaktu').classList.remove('hidden'); document.getElementById('errorWaktu').innerText = 'Pilih jam konsultasi'; isValid = false; }
+
+        const topik = document.getElementById('topikKonsultasi').value.trim();
+        if (!topik) { document.getElementById('errorTopik').classList.remove('hidden'); document.getElementById('errorTopik').innerText = 'Topik konsultasi wajib diisi'; isValid = false; }
+
+        const metodeRadios = document.querySelectorAll('input[name="metode"]');
+        const metodeChecked = [...metodeRadios].some(r => r.checked);
+        if (!metodeChecked) { document.getElementById('errorMetode').classList.remove('hidden'); document.getElementById('errorMetode').innerText = 'Pilih metode konsultasi'; isValid = false; }
+
+        if (isValid) {
+            // Submit the form
+            form.submit();
+        }
+    });
+
+    closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.add('hidden'); });
+    
+    // Back to Top Button
+    const backToTopBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            backToTopBtn.classList.add('show');
+        } else {
+            backToTopBtn.classList.remove('show');
+        }
+    });
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // Smooth scroll untuk anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === "#" || targetId === "") return;
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+{% endblock %}

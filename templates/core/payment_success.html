@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pembayaran Berhasil - FamaLine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-animation {
+        animation: scaleUp 0.5s ease-out;
+    }
+    @keyframes scaleUp {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.1); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-16 px-4 relative">
+    <!-- Confetti Effect (simulasi) -->
+    <div class="confetti">
+        <canvas id="confettiCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
+    </div>
+    
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-cream-200 relative z-10 success-animation">
+        <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-8 text-white text-center">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fas fa-check-circle text-5xl text-green-500"></i>
+            </div>
+            <h1 class="text-2xl font-bold">Pembayaran Berhasil! 🎉</h1>
+            <p class="text-white/80 text-sm mt-2">Terima kasih telah membeli kelas di AsuhBijak</p>
+        </div>
+        
+        <div class="p-6">
+            <!-- Detail Order -->
+            <div class="mb-6">
+                <h3 class="font-bold text-charcoal mb-3">📋 Detail Pembelian</h3>
+                <div class="bg-cream-50 rounded-xl p-4 space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Order ID</span>
+                        <span class="font-mono font-semibold">{{ order.order_id }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Kelas</span>
+                        <span class="font-semibold">{{ order.kelas_nama }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Nama</span>
+                        <span>{{ order.nama }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Email</span>
+                        <span>{{ order.email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">WhatsApp</span>
+                        <span>{{ order.whatsapp }}</span>
+                    </div>
+                    <div class="border-t border-cream-200 pt-2 mt-2">
+                        <div class="flex justify-between font-bold">
+                            <span>Total Dibayar</span>
+                            <span class="text-teracotta">Rp{{ order.kelas_harga|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informasi Akses Kelas -->
+            <div class="mb-6 p-4 bg-blue-50 rounded-xl">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-graduation-cap text-blue-600 text-xl mt-0.5"></i>
+                    <div>
+                        <p class="font-semibold text-blue-800">Akses Kelas Aktif!</p>
+                        <p class="text-sm text-blue-700 mt-1">Anda sekarang memiliki akses penuh ke kelas <strong>{{ order.kelas_nama }}</strong>. Silakan mulai belajar kapan saja.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tombol Aksi -->
+            <div class="space-y-3">
+                <a href="{% url 'core:my_classes' %}" class="block w-full bg-teracotta text-white text-center font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md">
+                    <i class="fas fa-book-open mr-2"></i> Mulai Belajar
+                </a>
+                <a href="{% url 'core:kelas' %}" class="block w-full border border-teracotta text-teracotta text-center font-semibold py-3 rounded-xl hover:bg-teracotta hover:text-white transition">
+                    <i class="fas fa-shopping-cart mr-2"></i> Beli Kelas Lainnya
+                </a>
+            </div>
+            
+            <!-- Info WhatsApp -->
+            <div class="mt-6 text-center text-xs text-gray-400">
+                <i class="fab fa-whatsapp text-green-500 mr-1"></i>
+                Konfirmasi pembayaran telah dikirim ke WhatsApp Anda.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simple confetti effect
+    (function() {
+        const canvas = document.getElementById('confettiCanvas');
+        if (!canvas) return;
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#C97A63', '#8C5A4C'];
+        
+        for (let i = 0; i < 100; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                size: Math.random() * 8 + 4,
+                speedY: Math.random() * 5 + 3,
+                speedX: (Math.random() - 0.5) * 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rotation: Math.random() * 360,
+                rotationSpeed: (Math.random() - 0.5) * 10
+            });
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let allDone = true;
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+                
+                if (p.y < canvas.height + 100) {
+                    allDone = false;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                    ctx.restore();
+                }
+            }
+            
+            if (!allDone) {
+                requestAnimationFrame(animate);
+            }
+        }
+        
+        animate();
+        
+        // Resize handler
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    })();
+</script>
+{% endblock %}

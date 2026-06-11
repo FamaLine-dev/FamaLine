@@ -1,0 +1,455 @@
+{% extends 'base.html' %} {% load static %} {% block title %}FamaLine |
+Parenting Modern & Keluarga Sakinah{% endblock %} {% block content %}
+<!-- HERO SECTION -->
+<header
+  id="home"
+  class="relative overflow-hidden bg-gradient-to-br from-cream-100 via-white to-cream-200 pt-12 pb-20 md:pt-20 md:pb-28"
+>
+  <div
+    class="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
+  >
+    <div class="space-y-6 text-center lg:text-left">
+      <div
+        class="inline-flex items-center gap-2 bg-cream-300/60 backdrop-blur-sm px-4 py-1.5 rounded-full text-teracotta text-sm font-bold tracking-wide"
+      >
+        <span class="w-2 h-2 bg-teracotta rounded-full"></span> Ruang Tumbuh
+        Keluarga
+      </div>
+      <h1
+        class="text-4xl md:text-6xl font-bold leading-tight text-charcoal tracking-tight"
+      >
+        Membimbing Anak <br /><span class="text-teracotta"
+          >dengan Cinta & Logika</span
+        >
+      </h1>
+      <p class="text-gray-600 text-lg max-w-lg mx-auto lg:mx-0 leading-relaxed">
+        Temukan pola asuh positif, konsultasi psikologi anak, dan program
+        ta'aruf keluarga untuk masa depan yang lebih bahagia.
+      </p>
+      <div
+        class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start p-3 bg-cream-300/40 backdrop-blur-sm rounded-2xl border border-cream-300/50 w-full sm:w-auto inline-flex"
+      >
+        <a
+          href="{% url 'core:kelas' %}"
+          class="bg-teracotta text-white px-7 py-3.5 rounded-xl font-bold shadow-md hover:shadow-lg transition-all duration-200 text-center whitespace-nowrap"
+          >Mulai Perjalanan</a
+        >
+        <a
+          href="{% url 'core:artikel_list' %}"
+          class="bg-white/80 border border-teracotta/30 text-teracotta px-7 py-3.5 rounded-xl font-semibold hover:bg-cream-200 transition duration-200 text-center whitespace-nowrap"
+          >Jelajahi Artikel</a
+        >
+      </div>
+    </div>
+    <div class="relative flex justify-center lg:justify-end mb-8">
+      <div
+        class="w-full max-w-md bg-white rounded-[22px] shadow-2xl overflow-hidden border-4 border-white relative animate-float"
+      >
+        <div
+          class="h-80 bg-gradient-to-br from-teracotta/20 to-cream-300 flex items-center justify-center"
+        >
+          <i class="fas fa-hand-holding-heart text-7xl text-teracotta/60"></i>
+        </div>
+        <div
+          class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm py-2.5 px-4 rounded-xl text-center shadow-sm border border-cream-200"
+        >
+          <span class="text-warmbrown font-bold text-sm tracking-wide"
+            >🌿 Tumbuh Bahagia Bersama</span
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAYANAN SECTION -->
+<section id="layanan" class="py-20 max-w-7xl mx-auto px-5 lg:px-8">
+  <div class="text-center max-w-2xl mx-auto mb-14">
+    <span
+      class="text-teracotta font-semibold text-sm uppercase tracking-wider bg-cream-200 px-4 py-1 rounded-full"
+      >Layanan Unggulan</span
+    >
+    <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-4 mb-4">
+      Pendampingan <span class="text-teracotta">Penuh Makna</span>
+    </h2>
+    <p class="text-gray-500">
+      Konsultasi parenting berbasis riset & program ta'aruf untuk keluarga masa
+      depan
+    </p>
+  </div>
+  <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+    <div
+      class="service-card bg-white rounded-3xl p-8 border border-cream-200 shadow-sm relative overflow-hidden group"
+    >
+      <div
+        class="absolute -top-8 -right-8 w-32 h-32 bg-cream-200 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"
+      ></div>
+      <div class="relative z-10">
+        <div
+          class="w-14 h-14 bg-cream-300 rounded-2xl flex items-center justify-center text-teracotta text-2xl mb-6 shadow-inner"
+        >
+          💬
+        </div>
+        <h3 class="text-2xl font-bold text-charcoal mb-3">
+          Konsultasi Parenting & Psikologi
+        </h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Sesi konsultasi 1-on-1 bersama psikolog anak dan praktisi parenting.
+          Diskusikan tantangan pengasuhan, tumbuh kembang, dan solusi praktis.
+        </p>
+        <ul class="text-sm text-gray-600 space-y-2 mb-8">
+          <li class="flex items-center gap-2">
+            ✅ <span>Sesi via video call atau chat pribadi</span>
+          </li>
+          <li class="flex items-center gap-2">
+            ✅ <span>Jadwal fleksibel & rahasia terjaga</span>
+          </li>
+          <li class="flex items-center gap-2">
+            ✅ <span>Rekomendasi modul pengasuhan personal</span>
+          </li>
+        </ul>
+        <a
+          href="{% url 'core:konsultasi' %}"
+          class="block w-full text-center bg-warmbrown text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-sm"
+          >Jadwalkan Konsultasi →</a
+        >
+      </div>
+    </div>
+    <div
+      class="service-card bg-white rounded-3xl p-8 border border-cream-200 shadow-sm relative overflow-hidden group"
+    >
+      <div
+        class="absolute -top-8 -right-8 w-32 h-32 bg-cream-200 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"
+      ></div>
+      <div class="relative z-10">
+        <div
+          class="w-14 h-14 bg-cream-300 rounded-2xl flex items-center justify-center text-teracotta text-2xl mb-6 shadow-inner"
+        >
+          🤝
+        </div>
+        <h3 class="text-2xl font-bold text-charcoal mb-3">
+          Program Ta'aruf Keluarga
+        </h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Fasilitasi perkenalan pranikah yang syar'i, aman, dan terarah.
+          Membangun visi-misi pengasuhan bersama.
+        </p>
+        <ul class="text-sm text-gray-600 space-y-2 mb-8">
+          <li class="flex items-center gap-2">
+            ✅ <span>Didampingi mediator berpengalaman</span>
+          </li>
+          <li class="flex items-center gap-2">
+            ✅ <span>Pertukaran profil & visi pola asuh</span>
+          </li>
+          <li class="flex items-center gap-2">
+            ✅ <span>Konsultasi pra-nikah bersama ahli</span>
+          </li>
+        </ul>
+        <a
+          href="{% url 'core:taaruf' %}"
+          class="block w-full text-center bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-sm"
+          >Daftar Ta'aruf →</a
+        >
+      </div>
+    </div>
+  </div>
+  <div
+    class="text-center mt-16 max-w-2xl mx-auto bg-cream-200/40 rounded-2xl p-6"
+  >
+    <p class="italic text-gray-600">
+      "Mendidik anak bukan hanya tentang aturan, tapi tentang keteladanan dan
+      cinta yang konsisten."
+    </p>
+    <span class="text-xs text-teracotta mt-2 block"
+      >— Tim Psikolog AsuhBijak</span
+    >
+  </div>
+</section>
+
+<!-- ARTIKEL SECTION -->
+<section id="artikel" class="py-16 bg-gradient-to-b from-white to-cream-100/50">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span
+        class="text-teracotta text-sm font-bold bg-cream-200/80 px-4 py-1 rounded-full"
+        >Wawasan terkini</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-3">
+        Artikel Pilihan Minggu Ini
+      </h2>
+      <p class="text-gray-500 mt-3">
+        Temukan tips praktis dari para ahli untuk setiap fase tumbuh kembang
+        anak
+      </p>
+    </div>
+    <div class="swiper mySwiper pb-14 px-1">
+      <div class="swiper-wrapper">
+        {% for artikel in artikel_terbaru %}
+        <div class="swiper-slide h-auto">
+          <div
+            class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-cream-200 h-full flex flex-col"
+          >
+            <div
+              class="h-52 bg-gradient-to-br from-cream-300 to-cream-400 flex items-center justify-center text-cream-800 font-medium relative"
+            >
+              <span
+                class="absolute inset-0 flex items-center justify-center text-warmbrown/60 text-sm"
+              >
+                {% if artikel.kategori == 'balita' %}📖{% elif artikel.kategori
+                == 'psikologi' %}🧠{% elif artikel.kategori == 'remaja' %}📱{%
+                else %}❤️{% endif %} Ilustrasi
+              </span>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <div
+                class="text-xs font-semibold text-teracotta uppercase tracking-wide mb-2"
+              >
+                {{ artikel.get_kategori_display }}
+              </div>
+              <h3
+                class="text-xl font-bold mb-2 hover:text-teracotta transition"
+              >
+                <a href="{% url 'core:artikel_detail' artikel.slug %}"
+                  >{{ artikel.judul }}</a
+                >
+              </h3>
+              <p class="text-gray-500 text-sm line-clamp-3">
+                {{ artikel.konten|striptags|truncatechars:100 }}
+              </p>
+              <div class="mt-5 pt-3 text-right">
+                <a
+                  href="{% url 'core:artikel_detail' artikel.slug %}"
+                  class="text-teracotta text-sm font-semibold inline-flex items-center gap-1"
+                  >Baca selengkapnya →</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="swiper-slide">
+          <div class="bg-white rounded-2xl p-10 text-center">
+            Belum ada artikel
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-prev hidden md:flex"></div>
+      <div class="swiper-button-next hidden md:flex"></div>
+    </div>
+  </div>
+</section>
+
+<!-- KELAS SECTION -->
+<section id="kelas" class="py-20 bg-cream-200">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <span
+        class="inline-block bg-white/70 backdrop-blur-sm rounded-full px-4 py-1 text-teracotta text-sm font-bold shadow-sm"
+        >🚀 Kelas Online Interaktif</span
+      >
+      <h2 class="text-3xl md:text-4xl font-bold text-charcoal mt-4">
+        Pilihan Kelas Singkat
+      </h2>
+      <p class="text-gray-600 mt-3">
+        Pilih kelas sesuai kebutuhan, geser untuk melihat kelas lainnya
+      </p>
+    </div>
+    <div class="swiper kelasSwiper pb-14 px-1">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide h-auto">
+          <div
+            class="cyan-corner-card kelas-card bg-white rounded-2xl overflow-hidden shadow-lg border border-cream-200 flex flex-col h-full relative"
+          >
+            <div class="fold-corner"></div>
+            <div class="fold-corner-inner"></div>
+            <div
+              class="absolute top-2 right-2 z-10 text-xs opacity-40 pointer-events-none"
+            >
+              📎
+            </div>
+            <div class="bg-teracotta/10 px-6 py-4 border-b border-cream-100">
+              <span
+                class="text-xs font-bold text-teracotta uppercase tracking-wider"
+                >🔥 Kelas Unggulan</span
+              >
+              <h3 class="text-2xl font-bold text-charcoal mt-1">
+                Positive Discipline 101
+              </h3>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="text-gray-600 text-sm mb-4">
+                Pelajari teknik disiplin positif tanpa hukuman, bangun karakter
+                anak yang mandiri dan bertanggung jawab.
+              </p>
+              <div class="space-y-2 text-sm text-gray-500 mb-6">
+                <div>🕒 <span>4 Modul Video (8 jam belajar)</span></div>
+                <div>📄 <span>Sertifikat & E-book Pendukung</span></div>
+                <div>👥 <span>Diskusi grup terbatas</span></div>
+              </div>
+              <div class="mt-auto pt-4">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-2xl font-bold text-teracotta">Rp149k</span>
+                  <span class="text-xs line-through text-gray-400">Rp299k</span>
+                </div>
+                <a
+                  href="{% url 'core:kelas' %}"
+                  class="block w-full text-center bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md"
+                  >Daftar Sekarang →</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide h-auto">
+          <div
+            class="sticky-note-card kelas-card bg-white rounded-2xl overflow-hidden shadow-lg border border-cream-200 flex flex-col h-full"
+          >
+            <div class="bg-warmbrown/10 px-6 py-4 border-b border-cream-100">
+              <span
+                class="text-xs font-bold text-warmbrown uppercase tracking-wider"
+                >🌟 Komunikasi Orang Tua</span
+              >
+              <h3 class="text-2xl font-bold text-charcoal mt-1">
+                Art of Active Listening
+              </h3>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="text-gray-600 text-sm mb-4">
+                Tingkatkan kualitas komunikasi dengan anak, belajar mendengarkan
+                secara aktif dan membangun kepercayaan.
+              </p>
+              <div class="space-y-2 text-sm text-gray-500 mb-6">
+                <div>🎧 <span>3 Sesi rekaman + simulasi</span></div>
+                <div>📘 <span>Panduan komunikasi harian</span></div>
+                <div>⭐ <span>Bonus sesi tanya jawab</span></div>
+              </div>
+              <div class="mt-auto pt-4">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-2xl font-bold text-teracotta">Rp99k</span>
+                  <span class="text-xs line-through text-gray-400">Rp189k</span>
+                </div>
+                <a
+                  href="{% url 'core:kelas' %}"
+                  class="block w-full text-center bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md"
+                  >Daftar Sekarang →</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide h-auto">
+          <div
+            class="paper-crease kelas-card bg-white rounded-2xl overflow-hidden shadow-lg border border-cream-200 flex flex-col h-full relative"
+          >
+            <div class="bg-cream-300/40 px-6 py-4 border-b border-cream-100">
+              <span
+                class="text-xs font-bold text-charcoal uppercase tracking-wider"
+                >👶 Fase Golden Age</span
+              >
+              <h3 class="text-2xl font-bold text-charcoal mt-1">
+                Stimulasi Cerdas Balita
+              </h3>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="text-gray-600 text-sm mb-4">
+                Panduan stimulasi kognitif, motorik, dan emosi untuk anak usia
+                0-5 tahun agar tumbuh optimal.
+              </p>
+              <div class="space-y-2 text-sm text-gray-500 mb-6">
+                <div>🧸 <span>5 Modul + aktivitas seru</span></div>
+                <div>📹 <span>Video demo praktek langsung</span></div>
+                <div>📝 <span>Checklist perkembangan anak</span></div>
+              </div>
+              <div class="mt-auto pt-4">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-2xl font-bold text-teracotta">Rp129k</span>
+                  <span class="text-xs line-through text-gray-400">Rp249k</span>
+                </div>
+                <a
+                  href="{% url 'core:kelas' %}"
+                  class="block w-full text-center bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md"
+                  >Daftar Sekarang →</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide h-auto">
+          <div
+            class="paper-clip-card kelas-card bg-white rounded-2xl overflow-hidden shadow-lg border border-cream-200 flex flex-col h-full relative"
+          >
+            <div class="clip-corner"></div>
+            <div class="clip-mark">📎</div>
+            <div class="bg-teracotta/10 px-6 py-4 border-b border-cream-100">
+              <span
+                class="text-xs font-bold text-teracotta uppercase tracking-wider"
+                >💍 Pra Nikah</span
+              >
+              <h3 class="text-2xl font-bold text-charcoal mt-1">
+                Ta'aruf & Visi Keluarga
+              </h3>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="text-gray-600 text-sm mb-4">
+                Kelas untuk calon pengantin: menyamakan visi pola asuh,
+                komunikasi efektif, dan membangun fondasi keluarga sakinah.
+              </p>
+              <div class="space-y-2 text-sm text-gray-500 mb-6">
+                <div>🤝 <span>Materi ta'aruf syar'i</span></div>
+                <div>📋 <span>Template visi misi keluarga</span></div>
+                <div>🎁 <span>Konsultasi singkat bersama mentor</span></div>
+              </div>
+              <div class="mt-auto pt-4">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-2xl font-bold text-teracotta">Rp179k</span>
+                  <span class="text-xs line-through text-gray-400">Rp350k</span>
+                </div>
+                <a
+                  href="{% url 'core:taaruf' %}"
+                  class="block w-full text-center bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition shadow-md"
+                  >Daftar Sekarang →</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-pagination kelas-pagination"></div>
+      <div class="swiper-button-prev kelas-prev hidden md:flex"></div>
+      <div class="swiper-button-next kelas-next hidden md:flex"></div>
+    </div>
+    <p class="text-center text-xs text-gray-500 mt-6">
+      *Akses seumur hidup & garansi materi update
+    </p>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  // Initialize Swiper for Artikel
+  const mySwiper = new Swiper(".mySwiper", {
+    slidesPerView: 1,
+    spaceBetween: 24,
+    loop: true,
+    autoplay: { delay: 4500, disableOnInteraction: false },
+    pagination: { el: ".swiper-pagination", clickable: true },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } },
+  });
+
+  // Initialize Swiper for Kelas
+  const kelasSwiper = new Swiper(".kelasSwiper", {
+    slidesPerView: 1,
+    spaceBetween: 24,
+    loop: true,
+    autoplay: { delay: 5000, disableOnInteraction: false },
+    pagination: { el: ".kelas-pagination", clickable: true },
+    navigation: { nextEl: ".kelas-next", prevEl: ".kelas-prev" },
+    breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } },
+  });
+</script>
+{% endblock %}

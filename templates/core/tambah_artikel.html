@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tambah Artikel - FamaLine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-input:focus {
+        outline: none;
+        border-color: #C97A63;
+        box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.1);
+    }
+    .preview-box {
+        background: #FFFDF9;
+        border: 1px solid #F5E6C9;
+        border-radius: 12px;
+        padding: 20px;
+        max-height: 600px;
+        overflow-y: auto;
+    }
+    .preview-box img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+    .image-preview {
+        position: relative;
+        display: inline-block;
+    }
+    .image-preview img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #F5E6C9;
+    }
+    .remove-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #EF4444;
+        color: white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-5 lg:px-8 py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{% url 'core:index' %}" class="hover:text-teracotta">Beranda</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <a href="{% url 'core:artikel_list' %}" class="hover:text-teracotta">Artikel</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="text-teracotta font-medium">Tambah Artikel</span>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl border border-cream-200 overflow-hidden">
+        <div class="bg-gradient-to-r from-teracotta to-warmbrown px-6 py-5 text-white">
+            <h1 class="text-xl font-bold">Tambah Artikel Baru</h1>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 md:p-8">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Form -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Judul Artikel <span class="text-red-500">*</span></label>
+                        <input type="text" name="judul" id="judul" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+                        <select name="kategori" id="kategori" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                            <option value="">-- Pilih Kategori --</option>
+                            <option value="balita">👶 Balita & Anak</option>
+                            <option value="psikologi">🧠 Psikologi Anak</option>
+                            <option value="remaja">📱 Remaja & Digital</option>
+                            <option value="keluarga">❤️ Keluarga Sakinah</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Konten Artikel <span class="text-red-500">*</span></label>
+                        <textarea name="konten" id="konten" rows="15" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 font-mono text-sm"></textarea>
+                    </div>
+
+                    <!-- Gambar -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Gambar Sampul (Opsional)</label>
+                        <div class="border-2 border-dashed border-cream-300 rounded-xl p-6 text-center hover:border-teracotta cursor-pointer" id="uploadArea">
+                            <input type="file" name="gambar" id="gambar" class="hidden" accept="image/*">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-500">Klik atau drag gambar ke sini</p>
+                        </div>
+                        <div id="imagePreview" class="hidden mt-3">
+                            <div class="image-preview">
+                                <img id="previewImg" src="#" alt="Preview">
+                                <button type="button" id="removeImage" class="remove-btn"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="space-y-6">
+                    <div class="bg-cream-50 rounded-xl p-5 border border-cream-200">
+                        <h3 class="font-bold mb-3 flex items-center gap-2">
+                            <i class="fas fa-eye text-teracotta"></i> Preview Artikel
+                        </h3>
+                        <div class="preview-box" id="previewBox"></div>
+                    </div>
+
+                    <div class="flex gap-3 pt-4">
+                        <button type="submit" class="flex-1 bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90">
+                            <i class="fas fa-save mr-2"></i> Simpan Artikel
+                        </button>
+                        <a href="{% url 'core:artikel_list' %}" class="px-6 py-3 border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50">
+                            Batal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentImageUrl = null;
+
+    // Live Preview
+    const judulInput = document.getElementById('judul');
+    const kontenInput = document.getElementById('konten');
+    const previewBox = document.getElementById('previewBox');
+
+    function updatePreview() {
+        const judul = judulInput.value.trim();
+        const konten = kontenInput.value;
+
+        let html = '';
+
+        if (currentImageUrl) {
+            html += `<img src="${currentImageUrl}" alt="Gambar Sampul">`;
+        }
+
+        if (judul) {
+            html += `<h2 style="font-size:1.5rem; font-weight:700; margin:1rem 0 0.5rem;">${escapeHtml(judul)}</h2>`;
+        }
+
+        if (konten) {
+            html += `<div>${konten}</div>`;
+        } else {
+            html += `<p class="text-gray-400 text-center py-10">Konten akan muncul di sini...</p>`;
+        }
+
+        previewBox.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    judulInput.addEventListener('input', updatePreview);
+    kontenInput.addEventListener('input', updatePreview);
+
+    // Image Preview
+    const uploadArea = document.getElementById('uploadArea');
+    const gambarInput = document.getElementById('gambar');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImage = document.getElementById('removeImage');
+
+    uploadArea.addEventListener('click', () => gambarInput.click());
+
+    gambarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            showImagePreview(file);
+        }
+    });
+
+    function showImagePreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            currentImageUrl = e.target.result;
+            previewImg.src = currentImageUrl;
+            imagePreview.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+            updatePreview();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    removeImage.addEventListener('click', () => {
+        gambarInput.value = '';
+        currentImageUrl = null;
+        imagePreview.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+        updatePreview();
+    });
+
+    // Initial preview
+    updatePreview();
+</script>
+{% endblock %}

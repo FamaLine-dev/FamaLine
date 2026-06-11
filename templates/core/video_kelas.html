@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ kelas.nama }} - FamaLine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        background: #1a1a2e;
+    }
+    .video-container iframe,
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    .locked-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.85);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        border-radius: 16px;
+    }
+    .module-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .module-card.locked {
+        opacity: 0.6;
+        filter: blur(2px);
+        pointer-events: none;
+    }
+    .module-card.unlocked {
+        opacity: 1;
+        filter: none;
+        pointer-events: auto;
+    }
+    .module-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+    }
+    .progress-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: #E5E7EB;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #C97A63, #8C5A4C);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{% url 'core:index' %}" class="hover:text-teracotta">Beranda</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <a href="{% url 'core:my_classes' %}" class="hover:text-teracotta">Kelas Saya</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="text-teracotta font-medium">{{ kelas.nama }}</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Kolom Kiri: Video & Materi -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Video Player -->
+            <div class="bg-white rounded-2xl shadow-lg border border-cream-200 overflow-hidden">
+                <div class="relative">
+                    <div class="video-container">
+                        {% if has_access %}
+                            <iframe src="{{ video_url|default:'https://www.youtube.com/embed/dQw4w9WgXcQ' }}" 
+                                    title="{{ kelas.nama }}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
+                        {% else %}
+                            <div class="locked-overlay">
+                                <i class="fas fa-lock text-6xl text-white/50 mb-4"></i>
+                                <h3 class="text-2xl font-bold text-white mb-2">Kelas Terkunci</h3>
+                                <p class="text-gray-300 text-center mb-6">
+                                    Beli kelas ini untuk mengakses<br>
+                                    video pembelajaran lengkap
+                                </p>
+                                <a href="{% url 'core:checkout' kelas.id %}" class="bg-teracotta text-white px-8 py-3 rounded-xl font-bold hover:bg-opacity-90 transition">
+                                    <i class="fas fa-shopping-cart mr-2"></i> Beli Sekarang
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Info Kelas -->
+                <div class="p-6 border-b border-cream-200">
+                    <h1 class="text-2xl font-bold text-charcoal">{{ kelas.nama }}</h1>
+                    <div class="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock text-teracotta mr-1"></i> {{ kelas.durasi|default:"8 jam" }}</span>
+                        <span><i class="fas fa-book-open text-teracotta mr-1"></i> {{ kelas.modul|default:"5" }} Modul</span>
+                        <span><i class="fas fa-certificate text-teracotta mr-1"></i> Sertifikat</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daftar Modul -->
+            <div class="bg-white rounded-2xl shadow-lg border border-cream-200 p-6">
+                <h2 class="text-xl font-bold text-charcoal mb-4 flex items-center gap-2">
+                    <i class="fas fa-list-ul text-teracotta"></i> Materi Pembelajaran
+                </h2>
+                <div class="space-y-3">
+                    {% for modul in modules %}
+                    <div class="module-card {% if not has_access %}locked{% else %}unlocked{% endif %} bg-cream-50 rounded-xl p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 {% if has_access %}bg-teracotta/20{% else %}bg-gray-200{% endif %} rounded-lg flex items-center justify-center">
+                                    {% if has_access %}
+                                        <i class="fas fa-play-circle text-teracotta"></i>
+                                    {% else %}
+                                        <i class="fas fa-lock text-gray-400"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-charcoal">Modul {{ forloop.counter }}: {{ modul.judul }}</h3>
+                                    <p class="text-xs text-gray-400">{{ modul.durasi }}</p>
+                                </div>
+                            </div>
+                            {% if has_access %}
+                                <button onclick="playVideo('{{ modul.video_url }}')" class="text-teracotta hover:underline text-sm">
+                                    <i class="fas fa-play mr-1"></i> Tonton
+                                </button>
+                            {% else %}
+                                <span class="text-gray-400 text-sm"><i class="fas fa-lock mr-1"></i> Terkunci</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Sidebar -->
+        <div class="space-y-6">
+            <!-- Status Akses -->
+            <div class="bg-white rounded-2xl shadow-lg border border-cream-200 p-6">
+                <h3 class="font-bold text-charcoal mb-4 flex items-center gap-2">
+                    <i class="fas fa-info-circle text-teracotta"></i> Status Akses
+                </h3>
+                
+                {% if has_access %}
+                    <div class="text-center p-4 bg-green-50 rounded-xl">
+                        <i class="fas fa-check-circle text-4xl text-green-500 mb-2"></i>
+                        <p class="font-semibold text-green-700">Akses Aktif</p>
+                        <p class="text-xs text-green-600 mt-1">Anda memiliki akses penuh ke kelas ini</p>
+                    </div>
+                {% else %}
+                    <div class="text-center p-4 bg-yellow-50 rounded-xl">
+                        <i class="fas fa-lock text-4xl text-yellow-500 mb-2"></i>
+                        <p class="font-semibold text-yellow-700">Akses Terkunci</p>
+                        <p class="text-xs text-yellow-600 mt-1">Beli kelas untuk membuka akses</p>
+                        <a href="{% url 'core:checkout' kelas.id %}" class="inline-block mt-4 bg-teracotta text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-opacity-90 transition">
+                            Beli Sekarang
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Progress Belajar -->
+            {% if has_access %}
+            <div class="bg-white rounded-2xl shadow-lg border border-cream-200 p-6">
+                <h3 class="font-bold text-charcoal mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-line text-teracotta"></i> Progress Belajar
+                </h3>
+                <div class="mb-2 flex justify-between text-sm">
+                    <span>Progress</span>
+                    <span class="font-semibold">{{ progress }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progress }}%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-3 text-center">
+                    {{ modules_completed }} dari {{ modules|length }} modul selesai
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- Materi Pendukung -->
+            <div class="bg-white rounded-2xl shadow-lg border border-cream-200 p-6">
+                <h3 class="font-bold text-charcoal mb-4 flex items-center gap-2">
+                    <i class="fas fa-download text-teracotta"></i> Materi Pendukung
+                </h3>
+                <div class="space-y-3">
+                    <a href="#" class="flex items-center justify-between p-3 bg-cream-50 rounded-xl hover:bg-cream-100 transition">
+                        <span class="text-sm"><i class="fas fa-file-pdf text-red-500 mr-2"></i> Modul PDF</span>
+                        <i class="fas fa-download text-gray-400"></i>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-3 bg-cream-50 rounded-xl hover:bg-cream-100 transition">
+                        <span class="text-sm"><i class="fas fa-file-alt text-blue-500 mr-2"></i> Worksheet</span>
+                        <i class="fas fa-download text-gray-400"></i>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-3 bg-cream-50 rounded-xl hover:bg-cream-100 transition">
+                        <span class="text-sm"><i class="fas fa-certificate text-green-500 mr-2"></i> Sertifikat</span>
+                        <i class="fas fa-download text-gray-400"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playVideo(videoUrl) {
+        const iframe = document.querySelector('.video-container iframe');
+        if (iframe) {
+            iframe.src = videoUrl;
+        }
+    }
+</script>
+{% endblock %}

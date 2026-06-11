@@ -1,0 +1,219 @@
+{% extends 'base.html' %} 
+{% load static %} 
+
+{% block title %}Artikel Parenting - FamaLine{% endblock %} 
+
+{% block content %}
+<!-- BREADCRUMB -->
+<div class="bg-cream-200/30 py-3">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+      <a href="{% url 'core:index' %}" class="hover:text-teracotta"
+        ><i class="fas fa-home"></i> Beranda</a
+      >
+      <i class="fas fa-chevron-right text-xs"></i>
+      <span class="text-teracotta font-medium">Artikel</span>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+  <div class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-charcoal">Artikel Parenting</h1>
+    <p class="text-gray-500 mt-2">
+      Tips dan wawasan dari para ahli untuk tumbuh kembang anak
+    </p>
+  </div>
+
+  <!-- Filter Kategori -->
+  <div class="flex flex-wrap gap-3 justify-center mb-10">
+    <a
+      href="{% url 'core:artikel_list' %}"
+      class="px-4 py-2 rounded-full {% if not kategori_aktif %}bg-teracotta text-white{% else %}bg-cream-200 text-charcoal{% endif %} font-semibold text-sm hover:bg-teracotta hover:text-white transition"
+      >Semua</a
+    >
+    <a
+      href="?kategori=balita"
+      class="px-4 py-2 rounded-full {% if kategori_aktif == 'balita' %}bg-teracotta text-white{% else %}bg-cream-200 text-charcoal{% endif %} font-semibold text-sm hover:bg-teracotta hover:text-white transition"
+      >👶 Balita & Anak</a
+    >
+    <a
+      href="?kategori=psikologi"
+      class="px-4 py-2 rounded-full {% if kategori_aktif == 'psikologi' %}bg-teracotta text-white{% else %}bg-cream-200 text-charcoal{% endif %} font-semibold text-sm hover:bg-teracotta hover:text-white transition"
+      >🧠 Psikologi Anak</a
+    >
+    <a
+      href="?kategori=remaja"
+      class="px-4 py-2 rounded-full {% if kategori_aktif == 'remaja' %}bg-teracotta text-white{% else %}bg-cream-200 text-charcoal{% endif %} font-semibold text-sm hover:bg-teracotta hover:text-white transition"
+      >📱 Remaja & Digital</a
+    >
+    <a
+      href="?kategori=keluarga"
+      class="px-4 py-2 rounded-full {% if kategori_aktif == 'keluarga' %}bg-teracotta text-white{% else %}bg-cream-200 text-charcoal{% endif %} font-semibold text-sm hover:bg-teracotta hover:text-white transition"
+      >❤️ Keluarga Sakinah</a
+    >
+  </div>
+
+  <!-- Grid Artikel -->
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for artikel in artikel_list %}
+    <div
+      class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-cream-200 group"
+    >
+      <div
+        class="h-48 bg-gradient-to-br from-teracotta/20 to-cream-300 flex items-center justify-center relative"
+      >
+        {% if artikel.kategori == 'balita' %}
+        <i class="fas fa-child text-6xl text-teracotta/60"></i>
+        {% elif artikel.kategori == 'psikologi' %}
+        <i class="fas fa-brain text-6xl text-teracotta/60"></i>
+        {% elif artikel.kategori == 'remaja' %}
+        <i class="fas fa-mobile-alt text-6xl text-teracotta/60"></i>
+        {% else %}
+        <i class="fas fa-heart text-6xl text-teracotta/60"></i>
+        {% endif %}
+        <div class="absolute top-4 left-4">
+          <span
+            class="text-xs bg-white/90 backdrop-blur px-2 py-1 rounded-full text-teracotta font-semibold"
+            >{{ artikel.get_kategori_display }}</span
+          >
+        </div>
+      </div>
+      <div class="p-6">
+        <h3
+          class="text-xl font-bold text-charcoal mb-2 group-hover:text-teracotta transition"
+        >
+          <a href="{% url 'core:artikel_detail' artikel.slug %}"
+            >{{ artikel.judul }}</a
+          >
+        </h3>
+        <p class="text-gray-500 text-sm line-clamp-3">
+          {{ artikel.konten|striptags|truncatechars:120 }}
+        </p>
+        <div
+          class="flex justify-between items-center mt-4 pt-3 border-t border-cream-100"
+        >
+          <div class="flex items-center gap-3 text-xs text-gray-400">
+            <span><i class="far fa-user"></i> {{ artikel.penulis }}</span>
+            <span
+              ><i class="far fa-calendar-alt"></i> {{ artikel.created_at|date:"d M Y" }}</span
+            >
+          </div>
+          <a
+            href="{% url 'core:artikel_detail' artikel.slug %}"
+            class="text-teracotta text-sm font-semibold inline-flex items-center gap-1"
+            >Baca →</a
+          >
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-span-3 text-center py-12">
+      <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
+      <p class="text-gray-500">Belum ada artikel dalam kategori ini.</p>
+      <a
+        href="{% url 'core:artikel_list' %}"
+        class="inline-block mt-4 text-teracotta hover:underline"
+        >Lihat semua artikel</a
+      >
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination (Opsional) -->
+  {% if is_paginated %}
+  <div class="flex justify-center gap-2 mt-12">
+    {% if page_obj.has_previous %}
+    <a
+      href="?page=1{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}"
+      class="px-4 py-2 rounded-lg border border-cream-300 hover:bg-teracotta hover:text-white transition"
+      >&laquo; Pertama</a
+    >
+    <a
+      href="?page={{ page_obj.previous_page_number }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}"
+      class="px-4 py-2 rounded-lg border border-cream-300 hover:bg-teracotta hover:text-white transition"
+      >← Sebelumnya</a
+    >
+    {% endif %}
+
+    <span class="px-4 py-2 rounded-lg bg-teracotta text-white"
+      >{{ page_obj.number }}</span
+    >
+
+    {% if page_obj.has_next %}
+    <a
+      href="?page={{ page_obj.next_page_number }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}"
+      class="px-4 py-2 rounded-lg border border-cream-300 hover:bg-teracotta hover:text-white transition"
+      >Selanjutnya →</a
+    >
+    <a
+      href="?page={{ page_obj.paginator.num_pages }}{% if kategori_aktif %}&kategori={{ kategori_aktif }}{% endif %}"
+      class="px-4 py-2 rounded-lg border border-cream-300 hover:bg-teracotta hover:text-white transition"
+      >Terakhir &raquo;</a
+    >
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Newsletter Section -->
+<section class="py-16 bg-gradient-to-r from-teracotta/10 to-cream-200/40 mt-8">
+  <div class="max-w-3xl mx-auto px-5 text-center">
+    <i class="fas fa-envelope-open-text text-4xl text-teracotta mb-4"></i>
+    <h2 class="text-2xl md:text-3xl font-bold text-charcoal mb-3">
+      Dapatkan Artikel Terbaru
+    </h2>
+    <p class="text-gray-600 mb-6">
+      Berlangganan newsletter untuk mendapatkan artikel parenting terbaru setiap
+      minggu
+    </p>
+    <form
+      method="post"
+      action="{% url 'core:subscribe' %}"
+      class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
+    >
+      {% csrf_token %}
+      <input
+        type="email"
+        name="email"
+        placeholder="Email Anda"
+        required
+        class="flex-1 px-4 py-3 rounded-xl border border-cream-300 focus:border-teracotta focus:outline-none"
+      />
+      <button
+        type="submit"
+        class="bg-teracotta text-white px-6 py-3 rounded-xl font-semibold hover:shadow-md transition"
+      >
+        Berlangganan
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %} 
+
+{% block extra_js %}
+<script>
+  // Animasi fade in untuk artikel cards
+  const artikelCards = document.querySelectorAll(".grid > div");
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: "0px 0px -50px 0px",
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = "1";
+        entry.target.style.transform = "translateY(0)";
+      }
+    });
+  }, observerOptions);
+
+  artikelCards.forEach((card, index) => {
+    card.style.opacity = "0";
+    card.style.transform = "translateY(30px)";
+    card.style.transition = `all 0.5s ease-out ${index * 0.1}s`;
+    observer.observe(card);
+  });
+</script>
+{% endblock %}

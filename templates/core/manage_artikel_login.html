@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - FamaLine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #8C5A4C 0%, #C97A63 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        /* Background decorative elements */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 1%, transparent 1%);
+            background-size: 50px 50px;
+            animation: shimmer 20s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes shimmer {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        .login-card {
+            animation: fadeInUp 0.6s ease-out;
+            backdrop-filter: blur(10px);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            transform: translateX(5px);
+        }
+        .login-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(201, 122, 99, 0.3);
+        }
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        .floating-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <!-- Decorative floating icons -->
+    <div class="fixed top-10 left-10 text-white/10 text-6xl floating-icon">
+        <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="fixed bottom-10 right-10 text-white/10 text-6xl floating-icon" style="animation-delay: 1s;">
+        <i class="fas fa-lock"></i>
+    </div>
+    <div class="fixed top-1/2 left-5 text-white/5 text-4xl floating-icon" style="animation-delay: 2s;">
+        <i class="fas fa-key"></i>
+    </div>
+
+    <div class="max-w-md w-full z-10">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="text-5xl font-bold text-white mb-2 tracking-wide">
+                FAMA<span class="text-yellow-300">LINE</span>
+            </div>
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <div class="w-12 h-0.5 bg-white/30"></div>
+                <span class="text-white/60 text-sm">Manajemen Artikel</span>
+                <div class="w-12 h-0.5 bg-white/30"></div>
+            </div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="login-card bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-teracotta to-warmbrown px-6 py-8 text-white text-center relative">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-16 -mb-16"></div>
+                <div class="relative z-10">
+                    <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm floating-icon">
+                        <i class="fas fa-shield-alt text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">Akses Terbatas</h2>
+                    <p class="text-white/80 text-sm mt-1">Halaman ini hanya untuk administrator</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="p-6">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-lock text-teracotta mr-2"></i> Password Admin
+                    </label>
+                    <div class="relative">
+                        <input type="password" name="password" id="password" required 
+                               class="input-field w-full px-4 py-3 pl-11 rounded-xl border border-cream-300 focus:border-teracotta focus:outline-none focus:ring-2 focus:ring-teracotta/20 transition"
+                               placeholder="Masukkan password">
+                        <i class="fas fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-teracotta transition">
+                            <i id="toggleIcon" class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn w-full bg-gradient-to-r from-teracotta to-warmbrown text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Masuk ke Dashboard</span>
+                </button>
+
+                <div class="mt-6 pt-4 border-t border-cream-200 text-center">
+                    <div class="flex items-center justify-center gap-2 text-xs text-gray-400">
+                        <i class="fas fa-shield-alt text-teracotta"></i>
+                        <span>Halaman ini dilindungi</span>
+                        <i class="fas fa-lock text-teracotta"></i>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">
+                        <i class="fas fa-clock mr-1"></i> Sesi akan berakhir setelah 1 jam
+                    </p>
+                </div>
+            </form>
+
+            <!-- Error Messages -->
+            {% if messages %}
+                <div class="mx-6 mb-6">
+                    {% for message in messages %}
+                    <div class="p-3 bg-red-50 border border-red-200 rounded-xl animate-pulse">
+                        <p class="text-red-600 text-sm text-center flex items-center justify-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ message }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6">
+            <p class="text-white/50 text-xs">
+                <i class="far fa-copyright mr-1"></i> 2026 FamaLine - Panel Manajemen Artikel
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1530 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>
+      {% block title %}FamaLine | Parenting Modern & Keluarga Sakinah{% endblock%}
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              cream: {
+                100: "#FFFDF9",
+                200: "#FDF6E2",
+                300: "#F5E6C9",
+                400: "#E6D2B5",
+              },
+              teracotta: "#C97A63",
+              warmbrown: "#8C5A4C",
+              charcoal: "#3D3A35",
+            },
+            fontFamily: {
+              serif: ["Playfair Display", "serif"],
+              sans: ["Nunito", "sans-serif"],
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0px)" },
+                "50%": { transform: "translateY(-8px)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Nunito", sans-serif;
+        background-color: #fffdf9;
+        scroll-behavior: smooth;
+      }
+      h1,
+      h2,
+      h3,
+      .font-serif {
+        font-family: "Playfair Display", serif;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f5e6c9;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #c97a63;
+        border-radius: 10px;
+      }
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .service-card {
+        transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .service-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 30px -12px rgba(60, 45, 40, 0.15);
+      }
+      .swiper-button-next,
+      .swiper-button-prev {
+        color: #c97a63 !important;
+        background-color: rgba(255, 255, 255, 0.95);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(2px);
+      }
+      .swiper-button-next:after,
+      .swiper-button-prev:after {
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .swiper-pagination-bullet-active {
+        background: #c97a63 !important;
+        width: 26px;
+        border-radius: 6px;
+      }
+      .hamburger-line {
+        transition: all 0.3s ease-in-out;
+      }
+      .open .line-1 {
+        transform: rotate(45deg) translate(5px, 5px);
+      }
+      .open .line-2 {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      .open .line-3 {
+        transform: rotate(-45deg) translate(6px, -6px);
+      }
+      html {
+        scroll-padding-top: 80px;
+      }
+      @media (max-width: 768px) {
+        html {
+          scroll-padding-top: 70px;
+        }
+      }
+      .kelas-card {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .kelas-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
+      }
+      .cyan-corner-card {
+        position: relative;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.08);
+      }
+      .cyan-corner-card .fold-corner {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 45px 45px 0;
+        border-color: transparent #fdf6e2 transparent transparent;
+        border-top-right-radius: 16px;
+        pointer-events: none;
+      }
+      .cyan-corner-card .fold-corner-inner {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 30px 30px 0;
+        border-color: transparent #e6d2b5 transparent transparent;
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .sticky-note-card {
+        position: relative;
+        background: #ffffff;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      .sticky-note-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(
+          135deg,
+          transparent 50%,
+          rgba(201, 122, 99, 0.05) 50%
+        );
+        border-top-right-radius: 20px;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .sticky-note-card::after {
+        content: "📎";
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: 18px;
+        opacity: 0.4;
+        transform: rotate(25deg);
+        pointer-events: none;
+        z-index: 2;
+        font-family: "Segoe UI", system-ui;
+      }
+      .paper-crease {
+        position: relative;
+      }
+      .paper-crease::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          transparent 50%,
+          rgba(201, 122, 99, 0.06) 50%
+        );
+        pointer-events: none;
+        z-index: 2;
+        border-top-right-radius: 16px;
+      }
+      .paper-clip-card {
+        position: relative;
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .paper-clip-card .clip-corner {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(225deg, transparent 55%, #fdf6e2 55%);
+        border-top-right-radius: 20px;
+        z-index: 1;
+      }
+      .paper-clip-card .clip-mark {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 14px;
+        color: #c97a63;
+        opacity: 0.5;
+        z-index: 2;
+        transform: rotate(20deg);
+      }
+      .modal-overlay {
+        transition: opacity 0.3s ease;
+      }
+      .modal-container {
+        transition: all 0.3s ease;
+        transform: scale(0.95);
+      }
+      .modal-container.active {
+        transform: scale(1);
+      }
+      .social-icon {
+        transition: all 0.3s ease;
+      }
+      .social-icon:hover {
+        transform: translateY(-3px);
+      }
+      .message {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      .back-to-top.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+/* Chatbot Styles */
+.chatbot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    background: #8C5A4C;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    animation: pulse-chat 2s infinite;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.1);
+    animation: none;
+}
+
+@keyframes pulse-chat {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+.chatbot-toggle i {
+    font-size: 28px;
+    color: white;
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+.chatbot-window.open {
+    display: flex;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatbot-header {
+    background: #8C5A4C;
+    padding: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatbot-avatar {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-avatar i {
+    font-size: 24px;
+    color: #075E54;
+}
+
+.chatbot-header-info h3 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.chatbot-header-info p {
+    font-size: 12px;
+    opacity: 0.8;
+    margin: 0;
+}
+
+.chatbot-close {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 20px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.chatbot-close:hover {
+    opacity: 1;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #E5DDD5;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message-bot {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.message-bot-avatar {
+    width: 30px;
+    height: 30px;
+    background: #075E54;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.message-bot-avatar i {
+    font-size: 16px;
+    color: white;
+}
+
+.message-bot-text {
+    background: white;
+    padding: 10px 12px;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    max-width: 80%;
+    font-size: 14px;
+    color: #1a1a1a;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+}
+
+.message-user {
+    display: flex;
+    justify-content: flex-end;
+    animation: fadeIn 0.3s ease;
+}
+
+.message-user-text {
+    background: #DCF8C6;
+    padding: 10px 12px;
+    border-radius: 18px;
+    border-top-right-radius: 4px;
+    max-width: 80%;
+    font-size: 14px;
+    color: #1a1a1a;
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 12px;
+    background: white;
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    width: fit-content;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #999;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+.chatbot-input {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #E5E5E5;
+    display: flex;
+    gap: 10px;
+}
+
+.chatbot-input input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #E5E5E5;
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+}
+
+.chatbot-input input:focus {
+    border-color: #25D366;
+}
+
+.chatbot-input button {
+    width: 40px;
+    height: 40px;
+    background: #25D366;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.chatbot-input button:hover {
+    background: #128C7E;
+    transform: scale(1.05);
+}
+
+.chatbot-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.chatbot-option-btn {
+    background: #F0F0F0;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+
+.chatbot-option-btn:hover {
+    background: #25D366;
+    color: white;
+}
+
+@media (max-width: 480px) {
+    .chatbot-window {
+        width: calc(100vw - 40px);
+        right: 0;
+        bottom: 80px;
+    }
+}
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body class="antialiased flex flex-col min-h-screen">
+    <!-- NAVBAR -->
+    <div class="sticky top-0 z-50">
+      <nav style="background-color: #8c5a4c" class="shadow-md">
+        <div
+          class="max-w-7xl mx-auto px-5 lg:px-8 py-4 flex justify-between items-center"
+        >
+          <a
+            href="{% url 'core:index' %}"
+            class="flex items-center gap-3 group"
+          >
+            <div class="flex-shrink-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 250 55"
+                width="200"
+                height="48"
+              >
+                <defs>
+                  <linearGradient
+                    id="teracottaGradWhite"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #fdf6e2; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #fffdf9; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <g transform="translate(20, 30)">
+                  <path
+                    d="M0,-22 L19,-13 L19,10 Q19,20 0,26 Q-19,20 -19,10 L-19,-13 Z"
+                    fill="none"
+                    stroke="#FDF6E2"
+                    stroke-width="3.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M0,-5 Q-4.5,-11 -9.5,-5 Q-11.5,2 -5,8 L0,13 L5,8 Q11.5,2 9.5,-5 Q4.5,-11 0,-5 Z"
+                    fill="#FDF6E2"
+                    opacity="0.95"
+                  />
+                </g>
+                <text
+                  x="48"
+                  y="35"
+                  font-family="'Playfair Display', Georgia, serif"
+                  font-size="26"
+                  font-weight="800"
+                  fill="#FFFDF9"
+                  letter-spacing="1.5"
+                  dominant-baseline="middle"
+                >
+                  FAMA
+                </text>
+                <text
+                  x="128"
+                  y="35"
+                  font-family="'Playfair Display', Georgia, serif"
+                  font-size="26"
+                  font-weight="800"
+                  fill="#FDF6E2"
+                  letter-spacing="2.8"
+                  dominant-baseline="middle"
+                >
+                  LINE
+                </text>
+              </svg>
+            </div>
+          </a>
+
+          <!-- DESKTOP MENU -->
+          <div class="hidden md:flex items-center gap-8 lg:gap-10">
+            <div
+              class="flex items-center gap-6 lg:gap-8 font-semibold text-white"
+            >
+              <a
+                href="{% url 'core:index' %}"
+                class="hover:text-cream-200 transition duration-200 text-base"
+                >Beranda</a
+              >
+              <a
+                href="{% url 'core:index' %}#layanan"
+                class="hover:text-cream-200 transition duration-200"
+                >Layanan</a
+              >
+              <a
+                href="{% url 'core:artikel_list' %}"
+                class="hover:text-cream-200 transition duration-200"
+                >Artikel</a
+              >
+              <a
+                href="{% url 'core:kelas' %}"
+                class="hover:text-cream-200 transition duration-200"
+                >Kelas Singkat</a
+              >
+              <a
+                href="{% url 'core:konsultasi' %}"
+                class="hover:text-cream-200 transition duration-200"
+                >Konsultasi</a
+              >
+              <a
+                href="{% url 'core:taaruf' %}"
+                class="hover:text-cream-200 transition duration-200"
+                >Ta'aruf</a
+              >
+            </div>
+            <div>
+              {% if user.is_authenticated %}
+              <div class="relative group">
+                <button
+                  class="bg-white text-warmbrown px-5 py-2.5 rounded-full font-semibold text-sm shadow-sm flex items-center gap-2 hover:bg-cream-100 transition"
+                >
+                  <i class="fas fa-user-circle text-teracotta text-base"></i>
+                  <span class="max-w-[130px] truncate">
+                    {% if user.first_name %} {{ user.first_name }} {% else %}
+                    {{ user.username|truncatechars:15 }} {% endif %}
+                  </span>
+                  <i
+                    class="fas fa-chevron-down text-xs text-warmbrown ml-1"
+                  ></i>
+                </button>
+                <div
+                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg hidden group-hover:block z-20 overflow-hidden border border-cream-200"
+                >
+                  <div class="px-4 py-3 bg-cream-100 border-b border-cream-200">
+                    <p class="text-sm font-semibold text-charcoal">
+                      {{ user.first_name|default:user.username }}
+                    </p>
+                    <p class="text-xs text-gray-500 truncate">
+                      {{ user.email }}
+                    </p>
+                  </div>
+                  <!-- TAMBAHKAN LINK PROFILE DI SINI -->
+      <a
+        href="{% url 'accounts:profile' %}"
+        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-cream-50 transition"
+      >
+        <i class="fas fa-user w-4 text-teracotta"></i> Accounts
+      </a>
+                  <a
+                    href="{% url 'core:my_classes' %}"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-cream-50 transition"
+                  >
+                    <i class="fas fa-book w-4 text-teracotta"></i> Kelas Saya
+                  </a>
+                  <div class="border-t border-cream-100 my-1"></div>
+                  <a
+                    href="{% url 'accounts:logout' %}"
+                    class="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition rounded-b-xl"
+                  >
+                    <i class="fas fa-sign-out-alt w-4"></i> Logout
+                  </a>
+                </div>
+              </div>
+              {% else %}
+              <a
+                href="{% url 'accounts:login' %}"
+                class="bg-white text-warmbrown px-6 py-2.5 rounded-full hover:shadow-md transition-all duration-200 font-semibold text-sm shadow-sm hover:bg-cream-100 whitespace-nowrap"
+              >
+                Masuk / Daftar
+              </a>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- MOBILE MENU BUTTON -->
+          <button
+            id="menu-btn"
+            class="block md:hidden focus:outline-none z-50 p-2"
+            aria-label="Menu"
+          >
+            <div class="w-6 h-5 flex flex-col justify-between">
+              <span
+                class="hamburger-line line-1 w-full h-0.5 bg-white rounded-full"
+              ></span>
+              <span
+                class="hamburger-line line-2 w-full h-0.5 bg-white rounded-full"
+              ></span>
+              <span
+                class="hamburger-line line-3 w-full h-0.5 bg-white rounded-full"
+              ></span>
+            </div>
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- MOBILE SIDEBAR -->
+    <div
+      id="mobile-overlay"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-all duration-300 md:hidden"
+    ></div>
+    <div
+      id="mobile-sidebar"
+      class="fixed top-0 left-0 bottom-0 w-4/5 max-w-sm z-50 p-6 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-out md:hidden flex flex-col justify-between"
+      style="background-color: #8c5a4c"
+    >
+      <div class="space-y-6">
+        <div class="pb-5 border-b border-white/20">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 250 55"
+            width="200"
+            height="48"
+          >
+            <defs>
+              <linearGradient
+                id="teracottaGradWhiteMob"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #fdf6e2; stop-opacity: 1"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #fffdf9; stop-opacity: 1"
+                />
+              </linearGradient>
+            </defs>
+            <g transform="translate(20, 30)">
+              <path
+                d="M0,-22 L19,-13 L19,10 Q19,20 0,26 Q-19,20 -19,10 L-19,-13 Z"
+                fill="none"
+                stroke="#FDF6E2"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M0,-5 Q-4.5,-11 -9.5,-5 Q-11.5,2 -5,8 L0,13 L5,8 Q11.5,2 9.5,-5 Q4.5,-11 0,-5 Z"
+                fill="#FDF6E2"
+                opacity="0.95"
+              />
+            </g>
+            <text
+              x="48"
+              y="35"
+              font-family="'Playfair Display', Georgia, serif"
+              font-size="26"
+              font-weight="800"
+              fill="#FFFDF9"
+              letter-spacing="1.5"
+              dominant-baseline="middle"
+            >
+              FAMA
+            </text>
+            <text
+              x="128"
+              y="35"
+              font-family="'Playfair Display', Georgia, serif"
+              font-size="26"
+              font-weight="800"
+              fill="#FDF6E2"
+              letter-spacing="2.8"
+              dominant-baseline="middle"
+            >
+              LINE
+            </text>
+          </svg>
+        </div>
+
+        <!-- Profile Section for Mobile -->
+        {% if user.is_authenticated and not user.is_superuser %}
+        <div
+          class="flex items-center gap-3 text-white/90 pb-3 border-b border-white/20"
+        >
+          <i class="fas fa-user-circle text-3xl"></i>
+          <div>
+            <p class="font-semibold">
+              {% if user.first_name %} {{ user.first_name }} {% else %} {{
+              user.username }} {% endif %}
+            </p>
+            <p class="text-xs text-cream-200 truncate max-w-[200px]">
+              {{ user.email }}
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+        <nav class="flex flex-col gap-3">
+          <a
+            href="{% url 'core:index' %}"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-home w-5"></i> Beranda
+          </a>
+          <a
+            href="{% url 'core:index' %}#layanan"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-hand-holding-heart w-5"></i> Layanan Unggulan
+          </a>
+          <a
+            href="{% url 'core:artikel_list' %}"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-newspaper w-5"></i> Artikel
+          </a>
+          <a
+            href="{% url 'core:kelas' %}"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-chalkboard-user w-5"></i> Kelas Singkat
+          </a>
+          <a
+            href="{% url 'core:konsultasi' %}"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-headset w-5"></i> Konsultasi
+          </a>
+          <a
+            href="{% url 'core:taaruf' %}"
+            class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2 border-b border-white/10"
+          >
+            <i class="fas fa-handshake w-5"></i> Ta'aruf
+          </a>
+          
+
+          {% if user.is_authenticated %}
+          <div class="mt-2 pt-2 border-t border-white/20">
+            <a
+    href="{% url 'accounts:profile' %}"
+    class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2"
+  >
+    <i class="fas fa-user w-5"></i> Accounts
+  </a>
+            <a
+              href="{% url 'core:my_classes' %}"
+              class="mobile-link flex items-center gap-3 text-base font-semibold text-white/90 hover:text-cream-200 transition py-2"
+            >
+              <i class="fas fa-book w-5"></i> Kelas Saya
+            </a>
+          </div>
+          {% endif %}
+        </nav>
+      </div>
+      <div class="pt-6 border-t border-white/20">
+        {% if user.is_authenticated %}
+        <a
+          href="{% url 'accounts:logout' %}"
+          class="block bg-white/20 text-white text-center py-3 rounded-xl font-bold hover:bg-white/30 transition"
+          >Logout</a
+        >
+        {% else %}
+        <a
+          href="{% url 'accounts:login' %}"
+          class="block bg-white text-warmbrown text-center py-3 rounded-xl font-bold shadow-md hover:bg-cream-100 transition"
+          >Masuk / Daftar</a
+        >
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    {% if messages %}
+    <div class="message space-y-2">
+      {% for message in messages %}
+      <div
+        class="px-4 py-3 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500 text-white{% elif message.tags == 'error' %}bg-red-500 text-white{% else %}bg-blue-500 text-white{% endif %}"
+      >
+        <i
+          class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"
+        ></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow">{% block content %}{% endblock %}</main>
+      <!-- CHATBOT CONTAINER -->
+<div class="chatbot-container">
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chatbot-header">
+            <div class="chatbot-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="chatbot-header-info">
+                <h3>Asisten FamaLine</h3>
+                <p>🤖 Online • Siap membantu Anda</p>
+            </div>
+            <div class="chatbot-close" id="chatbotClose">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Pesan awal akan ditambahkan oleh JS -->
+        </div>
+        
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Ketik pesan Anda..." autocomplete="off">
+            <button id="chatbotSend">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="chatbot-toggle" id="chatbotToggle">
+        <i class="fas fa-robot"></i>
+    </div>
+</div>
+   
+    <!-- BACK TO TOP BUTTON -->
+    <button
+      id="backToTop"
+      class="back-to-top bg-teracotta text-white rounded-full p-3 shadow-lg hover:bg-warmbrown transition-all fixed bottom-6 left-6 z-50"
+    >
+      <i class="fas fa-arrow-up text-xl"></i>
+    </button>
+
+    <!-- FOOTER -->
+    <footer class="pt-12 pb-8 mt-20" style="background-color: #8c5a4c">
+      <div class="max-w-7xl mx-auto px-5 lg:px-8">
+        <div
+          class="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-white/20 pb-8"
+        >
+          <div class="text-center md:text-left">
+            <p class="font-bold text-white text-2xl">
+              Asuh<span class="text-cream-200">Bijak</span>
+            </p>
+            <p class="text-cream-100 text-sm mt-2 max-w-md">
+              Membangun generasi berkarakter melalui pendampingan parenting
+              modern dan keluarga sakinah.
+            </p>
+          </div>
+          <div class="flex gap-4">
+            <button
+              onclick="openModal('instagram')"
+              class="social-icon w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+            >
+              <i class="fab fa-instagram text-white text-lg"></i>
+            </button>
+            <button
+              onclick="openModal('facebook')"
+              class="social-icon w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+            >
+              <i class="fab fa-facebook-f text-white text-lg"></i>
+            </button>
+            <button
+              onclick="openModal('twitter')"
+              class="social-icon w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+            >
+              <i class="fab fa-twitter text-white text-lg"></i>
+            </button>
+            <button
+              onclick="openModal('tiktok')"
+              class="social-icon w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all duration-300"
+            >
+              <i class="fab fa-tiktok text-white text-lg"></i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="flex flex-col md:flex-row justify-between items-center gap-4 pt-6"
+        >
+          <div class="flex flex-wrap justify-center gap-6 text-sm">
+            <button
+              onclick="openModal('privacy')"
+              class="text-cream-100 hover:text-cream-200 transition"
+            >
+              Kebijakan Privasi
+            </button>
+            <button
+              onclick="openModal('contact')"
+              class="text-cream-100 hover:text-cream-200 transition"
+            >
+              Kontak & Bantuan
+            </button>
+          </div>
+          <div class="text-center text-cream-100/70 text-xs">
+            © 2026 AsuhBijak — Membangun Generasi Berkarakter
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- MODAL SYSTEM -->
+    <div
+      id="modalOverlay"
+      class="fixed inset-0 bg-black/60 z-[100] opacity-0 pointer-events-none transition-all duration-300 flex items-center justify-center p-4"
+    >
+      <div
+        id="modalContainer"
+        class="bg-white rounded-2xl max-w-md w-full transform scale-95 transition-all duration-300 shadow-2xl overflow-hidden"
+      >
+        <div id="modalContent" class="p-6"></div>
+        <div
+          class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end"
+        >
+          <button
+            onclick="closeModal()"
+            class="px-5 py-2 bg-teracotta text-white rounded-lg font-semibold hover:bg-opacity-85 transition"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+      const modalData = {
+        instagram: {
+          title: "Instagram @AsuhBijak",
+          content:
+            "<div class='text-center'><div class='w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4'><i class='fab fa-instagram text-3xl text-white'></i></div><h3 class='text-xl font-bold text-charcoal mb-2'>@asuhbijak</h3><p class='text-gray-500 text-sm mb-4'>Ikuti kami di Instagram untuk tips parenting harian, live diskusi, dan inspirasi keluarga sakinah.</p><div class='bg-cream-100 rounded-lg p-3 text-sm'><span class='font-semibold'>📊 45.2rb pengikut</span><br><span>✨ 1.200+ konten edukasi</span></div><a href='https://instagram.com/asuhbijak' target='_blank' class='mt-4 inline-block w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition'>Kunjungi Instagram →</a></div>",
+        },
+        facebook: {
+          title: "Facebook AsuhBijak",
+          content:
+            "<div class='text-center'><div class='w-20 h-20 bg-[#1877F2] rounded-2xl flex items-center justify-center mx-auto mb-4'><i class='fab fa-facebook-f text-3xl text-white'></i></div><h3 class='text-xl font-bold text-charcoal mb-2'>AsuhBijak Parenting</h3><p class='text-gray-500 text-sm mb-4'>Bergabunglah dengan komunitas orang tua di Facebook, bagikan pengalaman dan dapatkan dukungan.</p><div class='bg-cream-100 rounded-lg p-3 text-sm'><span class='font-semibold'>👥 28.7rb anggota grup</span><br><span>💬 Diskusi aktif setiap hari</span></div><a href='https://facebook.com/asuhbijak' target='_blank' class='mt-4 inline-block w-full bg-[#1877F2] text-white py-3 rounded-xl font-semibold hover:shadow-lg transition'>Kunjungi Facebook →</a></div>",
+        },
+        twitter: {
+          title: "Twitter / X @AsuhBijak",
+          content:
+            "<div class='text-center'><div class='w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4'><i class='fab fa-twitter text-3xl text-white'></i></div><h3 class='text-xl font-bold text-charcoal mb-2'>@asuhbijak</h3><p class='text-gray-500 text-sm mb-4'>Dapatkan update artikel, thread parenting, dan diskusi ringan seputar tumbuh kembang anak.</p><div class='bg-cream-100 rounded-lg p-3 text-sm'><span class='font-semibold'>🐦 12.3rb pengikut</span><br><span>📢 Update mingguan</span></div><a href='https://twitter.com/asuhbijak' target='_blank' class='mt-4 inline-block w-full bg-black text-white py-3 rounded-xl font-semibold hover:shadow-lg transition'>Kunjungi Twitter →</a></div>",
+        },
+        tiktok: {
+          title: "TikTok @AsuhBijak",
+          content:
+            "<div class='text-center'><div class='w-20 h-20 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4'><i class='fab fa-tiktok text-3xl text-white'></i></div><h3 class='text-xl font-bold text-charcoal mb-2'>@asuhbijak</h3><p class='text-gray-500 text-sm mb-4'>Konten video singkat tips parenting, simulasi komunikasi anak, dan challenge seru.</p><div class='bg-cream-100 rounded-lg p-3 text-sm'><span class='font-semibold'>🎵 67.8rb pengikut</span><br><span>🎬 500k+ total likes</span></div><a href='https://tiktok.com/@asuhbijak' target='_blank' class='mt-4 inline-block w-full bg-black text-white py-3 rounded-xl font-semibold hover:shadow-lg transition'>Kunjungi TikTok →</a></div>",
+        },
+        privacy: {
+          title: "Kebijakan Privasi",
+          content:
+            "<div class='space-y-3'><p class='text-gray-600 text-sm'>Kami menghormati privasi Anda. Informasi pribadi yang Anda berikan akan kami jaga kerahasiaannya dan tidak akan dibagikan kepada pihak ketiga tanpa izin Anda.</p><div class='bg-cream-100 p-3 rounded-lg'><span class='font-semibold text-charcoal'>📌 Data yang Dikumpulkan:</span><ul class='text-sm text-gray-500 mt-1 list-disc pl-4'><li>Nama & kontak (email/WA)</li><li>Data konsultasi (rahasia)</li><li>Preferensi layanan</li></ul></div><div class='bg-cream-100 p-3 rounded-lg'><span class='font-semibold text-charcoal'>🔒 Keamanan:</span><p class='text-sm text-gray-500 mt-1'>Semua data dilindungi enkripsi dan hanya diakses oleh tim terbatas.</p></div><p class='text-xs text-gray-400 mt-2'>Terakhir diperbarui: Januari 2026</p></div>",
+        },
+        contact: {
+          title: "Kontak & Bantuan",
+          content:
+            "<div class='space-y-3'><div class='flex items-center gap-3 p-3 bg-cream-100 rounded-lg'><i class='fas fa-envelope text-2xl text-teracotta'></i><div><p class='font-semibold'>Email</p><a href='mailto:hello@asuhbijak.com' class='text-teracotta text-sm'>hello@asuhbijak.com</a></div></div><div class='flex items-center gap-3 p-3 bg-cream-100 rounded-lg'><i class='fab fa-whatsapp text-2xl text-green-500'></i><div><p class='font-semibold'>WhatsApp</p><a href='https://wa.me/6281234567890' class='text-teracotta text-sm'>+62 812-3456-7890</a></div></div><div class='flex items-center gap-3 p-3 bg-cream-100 rounded-lg'><i class='fas fa-clock text-2xl text-teracotta'></i><div><p class='font-semibold'>Jam Operasional</p><p class='text-sm text-gray-500'>Senin - Jumat, 09.00 - 17.00 WIB</p></div></div><p class='text-xs text-gray-400 text-center mt-2'>Balasan dalam 1x24 jam</p></div>",
+        },
+      };
+
+      function openModal(type) {
+        const data = modalData[type];
+        if (!data) return;
+        const modalOverlay = document.getElementById("modalOverlay");
+        const modalContainer = document.getElementById("modalContainer");
+        const modalContent = document.getElementById("modalContent");
+        modalContent.innerHTML = `<div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3"><h2 class="text-xl font-bold text-charcoal">${data.title}</h2></div>${data.content}`;
+        modalOverlay.classList.remove("opacity-0", "pointer-events-none");
+        modalOverlay.classList.add("opacity-100", "pointer-events-auto");
+        setTimeout(() => {
+          modalContainer.classList.remove("scale-95");
+          modalContainer.classList.add("scale-100");
+        }, 10);
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal() {
+        const modalOverlay = document.getElementById("modalOverlay");
+        const modalContainer = document.getElementById("modalContainer");
+        modalContainer.classList.remove("scale-100");
+        modalContainer.classList.add("scale-95");
+        modalOverlay.classList.remove("opacity-100", "pointer-events-auto");
+        modalOverlay.classList.add("opacity-0", "pointer-events-none");
+        document.body.style.overflow = "";
+      }
+
+      document
+        .getElementById("modalOverlay")
+        ?.addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeModal();
+      });
+    </script>
+
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileSidebar = document.getElementById("mobile-sidebar");
+      const mobileOverlay = document.getElementById("mobile-overlay");
+      const mobileLinks = document.querySelectorAll(".mobile-link");
+
+      function openMenu() {
+        menuBtn.classList.add("open");
+        mobileSidebar.classList.remove("-translate-x-full");
+        mobileSidebar.classList.add("translate-x-0");
+        mobileOverlay.classList.remove("opacity-0", "pointer-events-none");
+        mobileOverlay.classList.add("opacity-100", "pointer-events-auto");
+        document.body.style.overflow = "hidden";
+      }
+      function closeMenu() {
+        menuBtn.classList.remove("open");
+        mobileSidebar.classList.add("-translate-x-full");
+        mobileSidebar.classList.remove("translate-x-0");
+        mobileOverlay.classList.add("opacity-0", "pointer-events-none");
+        mobileOverlay.classList.remove("opacity-100", "pointer-events-auto");
+        document.body.style.overflow = "";
+      }
+      if (menuBtn)
+        menuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (mobileSidebar.classList.contains("-translate-x-full")) openMenu();
+          else closeMenu();
+        });
+      if (mobileOverlay) mobileOverlay.addEventListener("click", closeMenu);
+      mobileLinks.forEach((link) => link.addEventListener("click", closeMenu));
+
+      const backToTopBtn = document.getElementById("backToTop");
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+          backToTopBtn.classList.add("show");
+        } else {
+          backToTopBtn.classList.remove("show");
+        }
+      });
+      backToTopBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      setTimeout(() => {
+        const messages = document.querySelectorAll(".message");
+        messages.forEach((msg) => msg.remove());
+      }, 5000);
+
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const targetId = this.getAttribute("href");
+          if (targetId === "#" || targetId === "") return;
+          const targetElem = document.querySelector(targetId);
+          if (targetElem) {
+            e.preventDefault();
+            targetElem.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      if (typeof Swiper !== "undefined") {
+        if (document.querySelector(".mySwiper")) {
+          new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            loop: true,
+            autoplay: { delay: 4500, disableOnInteraction: false },
+            pagination: { el: ".swiper-pagination", clickable: true },
+            navigation: {
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            },
+            breakpoints: {
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            },
+          });
+        }
+        if (document.querySelector(".kelasSwiper")) {
+          new Swiper(".kelasSwiper", {
+            slidesPerView: 1,
+            spaceBetween: 24,
+            loop: true,
+            autoplay: { delay: 5000, disableOnInteraction: false },
+            pagination: { el: ".kelas-pagination", clickable: true },
+            navigation: { nextEl: ".kelas-next", prevEl: ".kelas-prev" },
+            breakpoints: {
+              640: { slidesPerView: 2 },
+              1024: { slidesPerView: 3 },
+            },
+          });
+        }
+      }
+    </script>
+    <script>
+            
+   // Chatbot dengan Backend API
+class FamaLineChatbot {
+    constructor() {
+        this.isOpen = false;
+        this.isTyping = false;
+        this.sessionId = null;
+        this.faqs = [];
+        this.init();
+    }
+    
+    async init() {
+        this.cacheElements();
+        this.bindEvents();
+        await this.loadFaqs();
+        this.addInitialMessage();
+    }
+    
+    cacheElements() {
+        this.toggleBtn = document.getElementById('chatbotToggle');
+        this.window = document.getElementById('chatbotWindow');
+        this.closeBtn = document.getElementById('chatbotClose');
+        this.messagesContainer = document.getElementById('chatbotMessages');
+        this.input = document.getElementById('chatbotInput');
+        this.sendBtn = document.getElementById('chatbotSend');
+    }
+    
+    bindEvents() {
+        this.toggleBtn.addEventListener('click', () => this.toggle());
+        this.closeBtn.addEventListener('click', () => this.close());
+        this.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.sendMessage();
+        });
+    }
+    
+    async loadFaqs() {
+        try {
+            const response = await fetch('/api/chatbot-faqs/');
+            const data = await response.json();
+            if (data.success) {
+                this.faqs = data.faqs;
+            }
+        } catch (error) {
+            console.error('Error loading FAQs:', error);
+        }
+    }
+    
+    toggle() {
+        if (this.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+    
+    open() {
+        this.window.classList.add('open');
+        this.isOpen = true;
+        this.input.focus();
+    }
+    
+    close() {
+        this.window.classList.remove('open');
+        this.isOpen = false;
+    }
+    
+    addInitialMessage() {
+        setTimeout(() => {
+            this.addBotMessage("Halo! 👋 Saya Asisten Virtual FamaLine. Ada yang bisa saya bantu?");
+            setTimeout(() => {
+                this.showOptions();
+            }, 500);
+        }, 500);
+    }
+    
+    showOptions() {
+        if (!this.faqs.length) return;
+        
+        const optionsHtml = `
+            <div class="chatbot-options">
+                ${this.faqs.map(faq => `
+                    <button class="chatbot-option-btn" data-category="${faq.category_key}">
+                        ${faq.button_icon} ${faq.button_text}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        
+        const optionsDiv = document.createElement('div');
+        optionsDiv.innerHTML = optionsHtml;
+        this.messagesContainer.appendChild(optionsDiv);
+        
+        // Bind option buttons
+        document.querySelectorAll('.chatbot-option-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const category = btn.getAttribute('data-category');
+                const faq = this.faqs.find(f => f.category_key === category);
+                if (faq) {
+                    this.handleOptionClick(faq);
+                }
+            });
+        });
+        
+        this.scrollToBottom();
+    }
+    
+    handleOptionClick(faq) {
+        this.addUserMessage(faq.button_text);
+        setTimeout(() => {
+            this.addBotMessage(faq.answer);
+            setTimeout(() => {
+                this.showOptions();
+            }, 1000);
+        }, 500);
+    }
+    
+    async sendMessage() {
+        const message = this.input.value.trim();
+        if (!message || this.isTyping) return;
+        
+        this.input.value = '';
+        this.addUserMessage(message);
+        
+        this.showTyping();
+        
+        try {
+            const response = await fetch('/api/chatbot/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: this.sessionId
+                })
+            });
+            
+            const data = await response.json();
+            
+            this.hideTyping();
+            
+            if (data.success) {
+                this.sessionId = data.session_id;
+                this.addBotMessage(data.response);
+                
+                // Update FAQs jika ada update dari server
+                if (data.menu_options) {
+                    setTimeout(() => {
+                        this.showOptions();
+                    }, 1000);
+                }
+            } else {
+                this.addBotMessage("Maaf, terjadi kesalahan. Silakan coba lagi nanti. 🙏");
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            this.hideTyping();
+            this.addBotMessage("Maaf, terjadi kesalahan koneksi. Silakan coba lagi. 🙏");
+        }
+    }
+    
+    addUserMessage(text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-user';
+        messageDiv.innerHTML = `<div class="message-user-text">${this.escapeHtml(text)}</div>`;
+        this.messagesContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+    }
+    
+    addBotMessage(text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-bot';
+        messageDiv.innerHTML = `
+            <div class="message-bot-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-bot-text">${this.formatMessage(text)}</div>
+        `;
+        this.messagesContainer.appendChild(messageDiv);
+        this.scrollToBottom();
+    }
+    
+    formatMessage(text) {
+        let formatted = text
+            .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>')
+            .replace(/✅/g, '✓')
+            .replace(/📚/g, '📚')
+            .replace(/👩‍⚕️/g, '👩‍⚕️')
+            .replace(/💍/g, '💍')
+            .replace(/📖/g, '📖')
+            .replace(/💰/g, '💰')
+            .replace(/📝/g, '📝')
+            .replace(/🔐/g, '🔐')
+            .replace(/🤖/g, '🤖');
+        return formatted;
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    showTyping() {
+        this.isTyping = true;
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message-bot';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+            <div class="message-bot-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        this.messagesContainer.appendChild(typingDiv);
+        this.scrollToBottom();
+    }
+    
+    hideTyping() {
+        const typing = document.getElementById('typingIndicator');
+        if (typing) typing.remove();
+        this.isTyping = false;
+    }
+    
+    scrollToBottom() {
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    }
+    
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+}
+
+// Inisialisasi chatbot
+document.addEventListener('DOMContentLoaded', () => {
+    const chatbot = new FamaLineChatbot();
+});
+        
+ 
+</script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

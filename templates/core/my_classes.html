@@ -1,0 +1,149 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Kelas Saya -
+FamaLine{% endblock %} {% block content %}
+<div class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+  <div class="text-center mb-10">
+    <h1 class="text-3xl md:text-4xl font-bold text-charcoal">📚 Kelas Saya</h1>
+    <p class="text-gray-500 mt-2">
+      Kelas yang telah Anda beli akan muncul di sini
+    </p>
+  </div>
+
+  {% if orders %}
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for order in orders %}
+    <div
+      class="bg-white rounded-2xl overflow-hidden shadow-md border border-cream-200 hover:shadow-lg transition group"
+    >
+      <div
+        class="h-40 bg-gradient-to-br from-teracotta/20 to-cream-300 flex items-center justify-center relative"
+      >
+        <i class="fas fa-chalkboard-user text-5xl text-teracotta/60"></i>
+        <div
+          class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+        >
+          <a
+            href="#"
+            class="bg-white text-teracotta px-4 py-2 rounded-lg font-semibold text-sm"
+          >
+            <i class="fas fa-play mr-1"></i> Mulai
+          </a>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-bold text-xl text-charcoal">
+            {{ order.kelas_nama }}
+          </h3>
+          <span
+            class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full"
+          >
+            <i class="fas fa-check-circle text-xs mr-1"></i> Aktif
+          </span>
+        </div>
+        <p class="text-gray-500 text-sm mb-3">
+          <i class="fas fa-calendar-alt text-gray-400 mr-1"></i>
+          Dibeli: {{ order.created_at|date:"d M Y" }}
+        </p>
+        <p class="text-gray-500 text-sm mb-4">
+          <i class="fas fa-clock text-gray-400 mr-1"></i>
+          Akses: Seumur Hidup
+        </p>
+        <div class="flex gap-2">
+          <!-- Tombol Mulai Belajar -->
+          <a
+            href="{% url 'core:kelas_video' order.kelas_id %}"
+            class="flex-1 bg-teracotta text-white text-center font-semibold py-2 rounded-lg hover:bg-opacity-90 transition text-sm"
+          >
+            <i class="fas fa-play-circle mr-1"></i> Mulai Belajar
+          </a>
+          <a
+            href="{% url 'core:kelas_detail' order.kelas_id %}"
+            class="border border-teracotta text-teracotta px-3 py-2 rounded-lg hover:bg-teracotta hover:text-white transition"
+          >
+            <i class="fas fa-info-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% elif session_orders %}
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for kelas in session_orders %}
+    <div
+      class="bg-white rounded-2xl overflow-hidden shadow-md border border-cream-200 hover:shadow-lg transition group"
+    >
+      <div
+        class="h-40 bg-gradient-to-br from-teracotta/20 to-cream-300 flex items-center justify-center relative"
+      >
+        <i class="fas fa-chalkboard-user text-5xl text-teracotta/60"></i>
+        <div
+          class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center"
+        >
+          <a
+            href="#"
+            class="bg-white text-teracotta px-4 py-2 rounded-lg font-semibold text-sm"
+          >
+            <i class="fas fa-play mr-1"></i> Mulai
+          </a>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-bold text-xl text-charcoal">
+            {{ kelas.kelas_nama }}
+          </h3>
+          <span
+            class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"
+          >
+            <i class="fas fa-clock text-xs mr-1"></i> Session
+          </span>
+        </div>
+        <p class="text-gray-500 text-sm mb-4">
+          <i class="fas fa-info-circle text-gray-400 mr-1"></i>
+          Login untuk menyimpan kelas permanen
+        </p>
+        <div class="flex gap-2">
+          <a
+            href="#"
+            class="flex-1 bg-teracotta text-white text-center font-semibold py-2 rounded-lg hover:bg-opacity-90 transition text-sm"
+          >
+            <i class="fas fa-play-circle mr-1"></i> Mulai Belajar
+          </a>
+          <a
+            href="{% url 'accounts:login' %}?next={% url 'core:my_classes' %}"
+            class="border border-teracotta text-teracotta px-3 py-2 rounded-lg hover:bg-teracotta hover:text-white transition text-sm whitespace-nowrap"
+          >
+            <i class="fas fa-sign-in-alt mr-1"></i> Login
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-16 bg-white rounded-2xl border border-cream-200">
+    <i class="fas fa-book-open text-6xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">Belum Ada Kelas</h3>
+    <p class="text-gray-400 mb-6">
+      Anda belum membeli kelas apapun. Yuk, mulai belajar sekarang!
+    </p>
+    <a
+      href="{% url 'core:kelas' %}"
+      class="inline-block bg-teracotta text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition"
+    >
+      <i class="fas fa-shopping-cart mr-2"></i> Lihat Kelas Tersedia
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Tips -->
+  <div class="mt-10 p-4 bg-blue-50 rounded-xl text-center">
+    <p class="text-sm text-blue-700">
+      <i class="fas fa-info-circle mr-1"></i>
+      Kelas yang sudah dibeli akan tersimpan selamanya. Anda bisa akses kapan
+      saja!
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>FamaLine | Masuk & Daftar - Komunitas Parenting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: { 100: '#FFFDF9', 200: '#FDF6E2', 300: '#F5E6C9', 400: '#E6D2B5' },
+                        teracotta: '#C97A63',
+                        warmbrown: '#8C5A4C',
+                        charcoal: '#3D3A35',
+                    },
+                    fontFamily: { 'serif': ['Playfair Display', 'serif'], 'sans': ['Nunito', 'sans-serif'] },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'fade-in': 'fadeIn 0.5s ease-out', 'slide-up': 'slideUp 0.4s ease-out' },
+                    keyframes: { float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-8px)' } }, fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }, slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } } }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #FFFDF9 0%, #FDF6E2 100%); min-height: 100vh; }
+        .auth-card { transition: all 0.3s ease; backdrop-filter: blur(2px); }
+        .input-group { transition: all 0.2s ease; }
+        .input-group:focus-within { transform: translateX(4px); }
+        input:focus { outline: none; box-shadow: none; }
+        .toggle-password { cursor: pointer; transition: color 0.2s; }
+        .toggle-password:hover { color: #C97A63; }
+        .shake { animation: shake 0.3s ease-in-out 0s 2; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .success-check { animation: scaleCheck 0.4s ease-out; }
+        @keyframes scaleCheck { 0% { transform: scale(0); opacity: 0; } 80% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+        .wa-login-btn { background: linear-gradient(135deg, #075E54 0%, #128C7E 100%); transition: all 0.3s ease; }
+        .wa-login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(7, 94, 84, 0.3); }
+        .message { position: fixed; top: 20px; right: 20px; z-index: 1000; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .otp-input, .pin-input, .pin-verify-input, .forgot-otp-input, .new-pin-input {
+            transition: all 0.15s ease;
+        }
+        .otp-input:focus, .pin-input:focus, .pin-verify-input:focus, .forgot-otp-input:focus, .new-pin-input:focus {
+            transform: scale(1.05);
+            border-color: #C97A63;
+            box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.2);
+        }
+        
+        .pin-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    {% if messages %}
+        <div class="message space-y-2">
+            {% for message in messages %}
+                <div class="px-4 py-3 rounded-lg shadow-lg {% if message.tags == 'success' %}bg-green-500 text-white{% elif message.tags == 'error' %}bg-red-500 text-white{% else %}bg-blue-500 text-white{% endif %}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} mr-2"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 w-64 h-64 bg-teracotta/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 right-10 w-80 h-80 bg-cream-300/40 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-6xl mx-auto py-8 px-4 min-h-screen flex items-center justify-center">
+        <div class="w-full">
+            <div class="text-center mb-8 animate-slide-up">
+                <a href="{% url 'core:index' %}" class="inline-flex items-center gap-1 text-3xl md:text-4xl font-bold tracking-tight">
+                    <span class="text-teracotta">FAMA</span><span class="text-charcoal">LINE</span>
+                </a>
+                <p class="text-gray-500 mt-2 text-sm">Platform Parenting & Keluarga Sakinah</p>
+            </div>
+
+            <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-cream-200 transition-all duration-500">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Left Side -->
+                    <div class="hidden md:flex md:w-5/12 bg-gradient-to-br from-teracotta/10 via-cream-200/50 to-cream-100 p-8 flex-col justify-between relative">
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-teracotta/5 rounded-full blur-2xl"></div>
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-teracotta/20 rounded-2xl flex items-center justify-center mb-8">
+                                <i class="fas fa-hand-holding-heart text-3xl text-teracotta"></i>
+                            </div>
+                            <h3 class="text-2xl font-serif font-bold text-charcoal mb-4">Selamat Datang Kembali, Parents!</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">Bergabunglah dengan ribuan orang tua hebat yang telah menemukan cara bijak mendampingi tumbuh kembang anak.</p>
+                            <div class="mt-8 space-y-4">
+                                <div class="flex items-center gap-3 text-sm text-gray-600"><i class="fas fa-check-circle text-teracotta"></i><span>Akses kelas parenting eksklusif</span></div>
+                                <div class="flex items-center gap-3 text-sm text-gray-600"><i class="fas fa-check-circle text-teracotta"></i><span>Konsultasi dengan pakar psikologi</span></div>
+                                <div class="flex items-center gap-3 text-sm text-gray-600"><i class="fas fa-check-circle text-teracotta"></i><span>Komunitas support sesama orang tua</span></div>
+                            </div>
+                        </div>
+                        <div class="relative z-10 mt-8 pt-6 border-t border-cream-300/50">
+                            <p class="text-xs text-gray-400 italic">"Mendidik anak adalah seni mencintai tanpa batas, namun tetap membimbing dengan bijak."</p>
+                            <p class="text-xs font-semibold text-teracotta mt-2">— Tim FamaLine</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Forms -->
+                    <div class="w-full md:w-7/12 p-6 md:p-8 lg:p-10">
+                        <div class="flex gap-2 bg-cream-100 rounded-xl p-1 mb-8">
+                            <button id="loginTabBtn" class="tab-btn flex-1 py-2.5 rounded-lg font-semibold transition-all duration-300 text-charcoal bg-white shadow-sm">Masuk</button>
+                            <button id="registerTabBtn" class="tab-btn flex-1 py-2.5 rounded-lg font-semibold transition-all duration-300 text-gray-500 hover:text-charcoal">Daftar Baru</button>
+                        </div>
+
+                        <!-- LOGIN FORM -->
+                        <div id="loginForm" class="form-container transition-all duration-300">
+                            <form id="loginUserForm" method="post" action="{% url 'accounts:login' %}" class="space-y-5">
+                                {% csrf_token %}
+                                <div class="input-group">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-envelope mr-2 text-teracotta text-xs"></i>Email / Username</label>
+                                    <div class="relative">
+                                        <input type="text" name="username" id="loginUsername" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 transition-all" placeholder="email@example.com atau username">
+                                        <i class="fas fa-user absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                                    </div>
+                                    <p class="text-xs text-red-400 hidden mt-1 error-message" id="loginUsernameError"></p>
+                                </div>
+                                <div class="input-group">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-lock mr-2 text-teracotta text-xs"></i>Kata Sandi</label>
+                                    <div class="relative">
+                                        <input type="password" name="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 transition-all pr-12" placeholder="••••••••">
+                                        <i class="toggle-password fas fa-eye-slash absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-teracotta cursor-pointer"></i>
+                                    </div>
+                                    <p class="text-xs text-red-400 hidden mt-1 error-message" id="loginPasswordError"></p>
+                                </div>
+                                <div class="flex justify-end">
+                                    <a href="#" class="text-xs text-teracotta hover:underline">Lupa kata sandi?</a>
+                                </div>
+                                <button type="submit" class="w-full bg-teracotta text-white font-bold py-3.5 rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-[1.01] flex items-center justify-center gap-2"><i class="fas fa-sign-in-alt"></i> Masuk ke Akun</button>
+                            </form>
+                            <div class="mt-6 text-center text-xs text-gray-400">
+                                <span class="inline-flex items-center gap-2">Belum punya akun? <button id="switchToRegisterBtn" class="text-teracotta font-semibold hover:underline">Daftar Sekarang</button></span>
+                            </div>
+                            
+                            <div class="relative my-6">
+                                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-cream-200"></div></div>
+                                <div class="relative flex justify-center text-xs"><span class="px-3 bg-white text-gray-400">Atau masuk dengan</span></div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <a href="{% url 'social:begin' 'google-oauth2' %}" class="flex-1 border border-cream-300 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:bg-cream-50 transition flex items-center justify-center gap-2">
+                                    <i class="fab fa-google text-red-500"></i> Google
+                                </a>
+                                <button type="button" id="whatsappLoginBtn" class="flex-1 wa-login-btn rounded-xl py-2.5 text-sm font-medium text-white transition flex items-center justify-center gap-2">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- REGISTER FORM -->
+                        <div id="registerForm" class="form-container hidden transition-all duration-300">
+                            <form id="registerUserForm" method="post" action="{% url 'accounts:register' %}" class="space-y-4">
+                                {% csrf_token %}
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-user mr-1 text-teracotta"></i>Nama Lengkap</label><input type="text" name="first_name" id="regFullname" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta" placeholder="Nama Anda"><p class="text-xs text-red-400 hidden error-message" id="regNameError"></p></div>
+                                    <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fab fa-whatsapp mr-1 text-teracotta"></i>No. WhatsApp</label><input type="tel" name="phone" id="regPhone" class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta" placeholder="08xxxxxxxxxx"><p class="text-xs text-red-400 hidden error-message" id="regPhoneError"></p></div>
+                                </div>
+                                <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-envelope mr-1 text-teracotta"></i>Email</label><input type="email" name="email" id="regEmail" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta" placeholder="email@example.com"><p class="text-xs text-red-400 hidden error-message" id="regEmailError"></p></div>
+                                <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-user mr-1 text-teracotta"></i>Username</label><input type="text" name="username" id="regUsername" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta" placeholder="username"><p class="text-xs text-red-400 hidden error-message" id="regUsernameError"></p></div>
+                                <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-lock mr-1 text-teracotta"></i>Kata Sandi</label><div class="relative"><input type="password" name="password1" id="regPassword" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta pr-12" placeholder="Minimal 6 karakter"><i class="toggle-password fas fa-eye-slash absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"></i></div><p class="text-xs text-red-400 hidden error-message" id="regPasswordError"></p></div>
+                                <div><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-check-circle mr-1 text-teracotta"></i>Konfirmasi Sandi</label><div class="relative"><input type="password" name="password2" id="regConfirmPassword" required class="w-full px-4 py-3 rounded-xl border border-cream-300 bg-cream-50/50 focus:border-teracotta pr-12" placeholder="Ketik ulang sandi"><i class="toggle-password fas fa-eye-slash absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"></i></div><p class="text-xs text-red-400 hidden error-message" id="regConfirmError"></p></div>
+                                <div><label class="flex items-start gap-3 text-sm text-gray-600"><input type="checkbox" id="agreeTerms" class="mt-1 w-4 h-4 rounded border-cream-300 text-teracotta focus:ring-teracotta"><span>Saya menyetujui <a href="#" class="text-teracotta font-semibold">Syarat & Ketentuan</a> dan <a href="#" class="text-teracotta font-semibold">Kebijakan Privasi</a></span></label><p class="text-xs text-red-400 hidden error-message" id="termsError"></p></div>
+                                <button type="submit" class="w-full bg-teracotta text-white font-bold py-3.5 rounded-xl hover:shadow-lg transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2"><i class="fas fa-user-plus"></i> Daftar Sekarang</button>
+                            </form>
+                            <div class="mt-6 text-center text-xs text-gray-400">Dengan mendaftar, Anda setuju menerima notifikasi kelas dan promo terbaru.</div>
+                            <div class="mt-4 text-center"><button id="switchToLoginBtn" class="text-teracotta font-semibold text-sm hover:underline"><i class="fas fa-arrow-left mr-1"></i> Kembali ke Halaman Masuk</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Login Modal -->
+    <div id="whatsappModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-md text-center mx-4 animate-slide-up w-full shadow-2xl border border-white/20">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fab fa-whatsapp text-3xl text-green-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-1">Login dengan WhatsApp</h3>
+            
+            <!-- Step 1: Input Nomor WhatsApp -->
+            <div id="waStep1">
+                <p class="text-gray-500 text-sm mb-4">Masukkan nomor WhatsApp Anda untuk menerima kode verifikasi</p>
+                <form id="whatsappLoginForm" class="space-y-3">
+                    <div>
+                        <input type="tel" id="waPhoneNumber" placeholder="08xxxxxxxxxx" 
+                               class="w-full px-4 py-2.5 rounded-xl border border-cream-300 focus:border-teracotta focus:outline-none text-sm bg-transparent">
+                        <p id="waPhoneError" class="text-xs text-red-400 hidden mt-1">Masukkan nomor WhatsApp yang valid</p>
+                    </div>
+                    <button type="submit" id="sendWaCodeBtn" 
+                            class="w-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold py-2.5 rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
+                        <i class="fab fa-whatsapp"></i> Kirim Kode Verifikasi
+                    </button>
+                </form>
+                <div id="waLoading" class="hidden mt-3">
+                    <div class="flex items-center justify-center gap-2 text-green-600 text-sm">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Mengirim kode verifikasi...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Input OTP -->
+            <div id="waStep2" class="hidden">
+                <p class="text-gray-500 text-sm mb-3">Masukkan kode OTP yang dikirim ke WhatsApp Anda</p>
+                
+                <div id="otpVerifyingLoading" class="hidden py-2 flex items-center justify-center gap-2 text-teracotta font-semibold animate-pulse">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span>Memverifikasi kode...</span>
+                </div>
+
+                <div class="otp-field flex justify-center gap-2 mb-3">
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="0">
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="1" disabled>
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="2" disabled>
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="3" disabled>
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="4" disabled>
+                    <input type="text" maxlength="1" class="otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="5" disabled>
+                </div>
+                <input type="hidden" id="otpCode" value="">
+                <p id="otpError" class="text-xs text-red-400 hidden mt-1">Kode OTP salah</p>
+                
+                <button id="verifyOtpBtn" class="w-full mt-2 bg-teracotta text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm">
+                    Verifikasi & Masuk
+                </button>
+                <button id="resendOtpBtn" class="w-full mt-2 text-teracotta text-xs hover:underline">
+                    Kirim ulang kode
+                </button>
+                <button id="backToPhoneBtn" class="w-full mt-2 text-gray-400 text-xs hover:text-gray-500 transition">
+                    ← Ganti nomor WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Setup Modal -->
+    <div id="pinSetupModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-md text-center mx-4 animate-slide-up w-full shadow-2xl border border-white/20">
+            <div class="w-16 h-16 bg-teracotta/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-shield-alt text-3xl text-teracotta"></i>
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Buat PIN Keamanan</h3>
+            <p class="text-gray-500 text-sm mb-4">Buat PIN 4-6 digit untuk mengamankan akun Anda</p>
+            
+            <div class="pin-field flex justify-center gap-3 mb-2">
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="0"></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="1" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="2" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="3" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all pin-optional" data-index="4" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all pin-optional" data-index="5" disabled></div>
+            </div>
+            
+            <div class="flex justify-center mb-2">
+                <button type="button" id="togglePinSetupVisibility" class="text-xs text-gray-400 hover:text-teracotta transition flex items-center gap-1">
+                    <i class="fas fa-eye-slash"></i> <span>Lihat PIN</span>
+                </button>
+            </div>
+            
+            <div class="flex justify-center gap-2 mb-4">
+                <button type="button" id="pin4Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-cream-200 text-charcoal hover:bg-teracotta hover:text-white transition">4 Digit</button>
+                <button type="button" id="pin5Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-cream-200 text-charcoal hover:bg-teracotta hover:text-white transition">5 Digit</button>
+                <button type="button" id="pin6Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-teracotta text-white transition">6 Digit</button>
+            </div>
+            
+            <p id="pinSetupError" class="text-xs text-red-400 hidden mt-1"></p>
+            <button id="savePinBtn" class="w-full bg-teracotta text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm mt-2">Simpan PIN</button>
+            <button id="cancelPinSetupBtn" class="w-full mt-2 text-gray-400 text-xs hover:text-gray-500 transition">← Batalkan</button>
+        </div>
+    </div>
+
+    <!-- PIN Verify Modal -->
+    <div id="pinVerifyModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-md text-center mx-4 animate-slide-up w-full shadow-2xl border border-white/20">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-fingerprint text-3xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Verifikasi PIN</h3>
+            <p class="text-gray-500 text-sm mb-4">Masukkan PIN keamanan Anda untuk melanjutkan</p>
+            
+            <div class="pin-verify-field flex justify-center gap-3 mb-2">
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="0"></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="1" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="2" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="3" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all pin-verify-optional" data-index="4" disabled></div>
+                <div class="pin-wrapper"><input type="password" maxlength="1" class="pin-verify-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all pin-verify-optional" data-index="5" disabled></div>
+            </div>
+            
+            <div class="flex justify-center mb-2">
+                <button type="button" id="togglePinVerifyVisibility" class="text-xs text-gray-400 hover:text-teracotta transition flex items-center gap-1">
+                    <i class="fas fa-eye-slash"></i> <span>Lihat PIN</span>
+                </button>
+            </div>
+            
+            <p id="pinVerifyError" class="text-xs text-red-400 hidden mt-1"></p>
+            <p id="pinAttemptsLeft" class="text-xs text-gray-400 hidden mt-1"></p>
+            
+            <button id="verifyPinBtn" class="w-full bg-teracotta text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm mt-2">Verifikasi & Masuk</button>
+            <button id="forgotPinLink" class="w-full mt-2 text-teracotta text-xs hover:underline">Lupa PIN?</button>
+            <button id="cancelPinVerifyBtn" class="w-full mt-2 text-gray-400 text-xs hover:text-gray-500 transition">← Batalkan</button>
+        </div>
+    </div>
+
+    <!-- Forgot PIN Modal -->
+    <div id="forgotPinModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl p-6 max-w-md text-center mx-4 animate-slide-up w-full shadow-2xl border border-white/20">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-key text-2xl text-yellow-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-charcoal mb-2">Lupa PIN?</h3>
+            
+            <!-- Step 1: Nomor WhatsApp -->
+            <div id="forgotPinStep1">
+                <p class="text-gray-500 text-sm mb-4">Masukkan nomor WhatsApp Anda untuk reset PIN</p>
+                <input type="tel" id="forgotPinPhone" placeholder="08xxxxxxxxxx" class="w-full px-4 py-2.5 rounded-xl border border-cream-300 focus:border-teracotta focus:outline-none text-sm bg-transparent mb-3">
+                <p id="forgotPinPhoneError" class="text-xs text-red-400 hidden mb-2">Masukkan nomor WhatsApp yang valid</p>
+                <button id="sendForgotPinOtpBtn" class="w-full bg-yellow-500 text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-paper-plane"></i> Kirim Kode Verifikasi
+                </button>
+                <button id="cancelForgotPinBtn" class="w-full mt-2 text-gray-400 text-xs hover:text-gray-500 transition">← Kembali ke Verifikasi PIN</button>
+            </div>
+            
+            <!-- Step 2: OTP -->
+            <div id="forgotPinStep2" class="hidden">
+                <p class="text-gray-500 text-sm mb-3">Masukkan kode OTP yang dikirim ke WhatsApp Anda</p>
+                <div id="forgotPinOtpLoading" class="hidden py-2 flex items-center justify-center gap-2 text-teracotta font-semibold animate-pulse">
+                    <i class="fas fa-circle-notch fa-spin"></i> Memverifikasi...
+                </div>
+                <div class="otp-field flex justify-center gap-2 mb-3">
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="0">
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="1" disabled>
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="2" disabled>
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="3" disabled>
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="4" disabled>
+                    <input type="text" maxlength="1" class="forgot-otp-input w-12 h-12 text-center font-bold text-xl border border-cream-300 rounded-xl focus:border-teracotta focus:ring-2 focus:ring-teracotta/20 bg-transparent transition-all" data-index="5" disabled>
+                </div>
+                <input type="hidden" id="forgotOtpCode" value="">
+                <p id="forgotOtpError" class="text-xs text-red-400 hidden mt-1"></p>
+                <button id="verifyForgotOtpBtn" class="w-full bg-teracotta text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm">Verifikasi & Lanjutkan</button>
+                <button id="resendForgotOtpBtn" class="w-full mt-2 text-teracotta text-xs hover:underline">Kirim ulang kode</button>
+                <button id="backToForgotPhoneBtn" class="w-full mt-2 text-gray-400 text-xs hover:text-gray-500 transition">← Ganti nomor WhatsApp</button>
+            </div>
+            
+            <!-- Step 3: New PIN -->
+            <div id="forgotPinStep3" class="hidden">
+                <p class="text-gray-500 text-sm mb-3">Buat PIN baru untuk akun Anda</p>
+                <div class="pin-field flex justify-center gap-3 mb-2">
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="0"></div>
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="1" disabled></div>
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="2" disabled></div>
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all" data-index="3" disabled></div>
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all new-pin-optional" data-index="4" disabled></div>
+                    <div class="pin-wrapper"><input type="password" maxlength="1" class="new-pin-input w-14 h-14 text-center text-2xl font-bold border-2 border-cream-300 rounded-xl focus:border-teracotta focus:outline-none bg-transparent transition-all new-pin-optional" data-index="5" disabled></div>
+                </div>
+                <div class="flex justify-center mb-2">
+                    <button type="button" id="toggleNewPinVisibility" class="text-xs text-gray-400 hover:text-teracotta transition flex items-center gap-1">
+                        <i class="fas fa-eye-slash"></i> <span>Lihat PIN</span>
+                    </button>
+                </div>
+                <div class="flex justify-center gap-2 mb-4">
+                    <button type="button" id="newPin4Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-cream-200 text-charcoal hover:bg-teracotta hover:text-white transition">4 Digit</button>
+                    <button type="button" id="newPin5Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-cream-200 text-charcoal hover:bg-teracotta hover:text-white transition">5 Digit</button>
+                    <button type="button" id="newPin6Btn" class="px-4 py-1 rounded-full text-xs font-semibold bg-teracotta text-white transition">6 Digit</button>
+                </div>
+                <p id="newPinError" class="text-xs text-red-400 hidden mt-1"></p>
+                <button id="saveNewPinBtn" class="w-full bg-teracotta text-white font-semibold py-2.5 rounded-lg hover:shadow-md transition-all text-sm mt-2">Simpan PIN Baru</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-all">
+        <div class="bg-white rounded-2xl p-8 max-w-sm text-center animate-slide-up mx-4">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 success-check"><i class="fas fa-check text-4xl text-green-500"></i></div>
+            <h3 class="text-2xl font-bold text-charcoal mb-2">Pendaftaran Berhasil!</h3>
+            <p class="text-gray-500 text-sm mb-6">Selamat! Akun Anda telah terdaftar. Silakan masuk untuk menikmati layanan FamaLine.</p>
+            <button id="closeModalBtn" class="bg-teracotta text-white px-6 py-2.5 rounded-xl font-semibold w-full">Masuk Sekarang</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // ==================== DOM ELEMENTS ====================
+        const loginTabBtn = document.getElementById('loginTabBtn');
+        const registerTabBtn = document.getElementById('registerTabBtn');
+        const loginFormDiv = document.getElementById('loginForm');
+        const registerFormDiv = document.getElementById('registerForm');
+        const switchToRegisterBtn = document.getElementById('switchToRegisterBtn');
+        const switchToLoginBtn = document.getElementById('switchToLoginBtn');
+        const successModal = document.getElementById('successModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        
+        const whatsappModal = document.getElementById('whatsappModal');
+        const whatsappLoginBtn = document.getElementById('whatsappLoginBtn');
+        const whatsappLoginForm = document.getElementById('whatsappLoginForm');
+        const waPhoneNumber = document.getElementById('waPhoneNumber');
+        const waPhoneError = document.getElementById('waPhoneError');
+        const waLoading = document.getElementById('waLoading');
+        const waStep1 = document.getElementById('waStep1');
+        const waStep2 = document.getElementById('waStep2');
+        const backToPhoneBtn = document.getElementById('backToPhoneBtn');
+        const otpError = document.getElementById('otpError');
+        const sendWaCodeBtn = document.getElementById('sendWaCodeBtn');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        
+        const pinSetupModal = document.getElementById('pinSetupModal');
+        const pinVerifyModal = document.getElementById('pinVerifyModal');
+        const forgotPinModal = document.getElementById('forgotPinModal');
+        
+        let cooldownInterval = null;
+        let isPinSetupVisible = false;
+        let isPinVerifyVisible = false;
+        let isNewPinVisible = false;
+        let currentPinLength = 6;
+        let currentPinValue = '';
+        let newPinLength = 6;
+        let newPinValue = '';
+
+        // ==================== UTILITY FUNCTIONS ====================
+        function setActiveTab(tab) {
+            if (tab === 'login') {
+                loginTabBtn.classList.add('bg-white', 'shadow-sm', 'text-charcoal');
+                loginTabBtn.classList.remove('text-gray-500');
+                registerTabBtn.classList.remove('bg-white', 'shadow-sm', 'text-charcoal');
+                registerTabBtn.classList.add('text-gray-500');
+                loginFormDiv.classList.remove('hidden');
+                registerFormDiv.classList.add('hidden');
+            } else {
+                registerTabBtn.classList.add('bg-white', 'shadow-sm', 'text-charcoal');
+                registerTabBtn.classList.remove('text-gray-500');
+                loginTabBtn.classList.remove('bg-white', 'shadow-sm', 'text-charcoal');
+                loginTabBtn.classList.add('text-gray-500');
+                registerFormDiv.classList.remove('hidden');
+                loginFormDiv.classList.add('hidden');
+            }
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
+                errorEl.parentElement?.classList.add('shake');
+                setTimeout(() => errorEl.parentElement?.classList.remove('shake'), 400);
+            }
+        }
+        
+        function hideError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) errorEl.classList.add('hidden');
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function startCooldown(seconds, button, defaultText) {
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            let remaining = seconds;
+            button.disabled = true;
+            button.innerHTML = `Tunggu ${remaining} detik...`;
+            cooldownInterval = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(cooldownInterval);
+                    button.disabled = false;
+                    button.innerHTML = defaultText;
+                    cooldownInterval = null;
+                } else {
+                    button.innerHTML = `Tunggu ${remaining} detik...`;
+                }
+            }, 1000);
+        }
+
+        // ==================== OTP INPUT HANDLER ====================
+        function setupOtpInputs() {
+            const otpInputs = document.querySelectorAll('#waStep2 .otp-input');
+            const hiddenOtpInput = document.getElementById('otpCode');
+            
+            function updateOtpValue() {
+                let combinedValue = "";
+                otpInputs.forEach(input => { if (input.value) combinedValue += input.value; });
+                if (hiddenOtpInput) hiddenOtpInput.value = combinedValue;
+                return combinedValue;
+            }
+            
+            function moveToNext(currentIndex) {
+                const nextInput = otpInputs[currentIndex + 1];
+                if (nextInput) { nextInput.disabled = false; nextInput.focus(); }
+            }
+            
+            function moveToPrev(currentIndex) {
+                const prevInput = otpInputs[currentIndex - 1];
+                if (prevInput) { prevInput.disabled = false; prevInput.value = ''; prevInput.focus(); updateOtpValue(); }
+            }
+            
+            otpInputs.forEach((input, index) => {
+                input.removeEventListener('input', input._handler);
+                input.removeEventListener('keydown', input._keydownHandler);
+                input.removeEventListener('paste', input._pasteHandler);
+                
+                input._handler = (e) => {
+                    let value = e.target.value;
+                    if (value && !/^\d$/.test(value)) { e.target.value = ''; return; }
+                    if (value && value.length > 1) { value = value.charAt(value.length - 1); e.target.value = value; }
+                    if (value && value !== '' && index < otpInputs.length - 1) { moveToNext(index); }
+                    updateOtpValue();
+                    if (updateOtpValue().length === 6) { triggerOtpVerification(); }
+                };
+                
+                input._keydownHandler = (e) => {
+                    if (e.key === 'Backspace') {
+                        if (input.value === '' && index > 0) { moveToPrev(index); }
+                        else if (input.value) { input.value = ''; updateOtpValue(); }
+                        e.preventDefault();
+                    }
+                    if (e.key === 'ArrowLeft' && index > 0) { document.querySelectorAll('.otp-input')[index - 1]?.focus(); e.preventDefault(); }
+                    if (e.key === 'ArrowRight' && index < 5) { const next = document.querySelectorAll('.otp-input')[index + 1]; if (next) { next.disabled = false; next.focus(); } e.preventDefault(); }
+                };
+                
+                input._pasteHandler = (e) => {
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = pastedText.replace(/\D/g, '').split('').slice(0, 6);
+                    digits.forEach((digit, idx) => {
+                        const targetIndex = index + idx;
+                        if (targetIndex < otpInputs.length) {
+                            const targetInput = otpInputs[targetIndex];
+                            targetInput.disabled = false;
+                            targetInput.value = digit;
+                        }
+                    });
+                    const nextIndex = Math.min(index + digits.length, 5);
+                    otpInputs[nextIndex]?.focus();
+                    updateOtpValue();
+                    if (updateOtpValue().length === 6) { triggerOtpVerification(); }
+                };
+                
+                input.addEventListener('input', input._handler);
+                input.addEventListener('keydown', input._keydownHandler);
+                input.addEventListener('paste', input._pasteHandler);
+                input.addEventListener('focus', () => input.select());
+            });
+        }
+
+        function resetOtpInputs() {
+            const otpInputs = document.querySelectorAll('#waStep2 .otp-input');
+            otpInputs.forEach((input, index) => { input.value = ''; input.disabled = index !== 0; });
+            if (otpInputs[0]) { otpInputs[0].focus(); otpInputs[0].select(); }
+            document.getElementById('otpCode').value = '';
+        }
+
+        // ==================== OTP VERIFICATION ====================
+        function triggerOtpVerification() {
+            const enteredOtp = document.getElementById('otpCode').value.trim();
+            if (enteredOtp.length !== 6) {
+                otpError.textContent = 'Masukkan 6 digit kode OTP';
+                otpError.classList.remove('hidden');
+                return;
+            }
+            document.querySelector("#waStep2 .otp-field").classList.add("hidden");
+            verifyOtpBtn.classList.add("hidden");
+            document.getElementById("otpVerifyingLoading").classList.remove("hidden");
+            
+            fetch('/auth/verify-wa-otp/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify({ otp_code: enteredOtp })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("otpVerifyingLoading").classList.add("hidden");
+                if (data.success) {
+                    if (data.requires_pin) {
+                        whatsappModal.classList.add('hidden');
+                        pinVerifyModal.classList.remove('hidden');
+                        setTimeout(() => { setupPinVerifyInputs(); document.querySelectorAll('.pin-verify-input')[0]?.focus(); }, 50);
+                    } else if (data.requires_pin_setup) {
+                        whatsappModal.classList.add('hidden');
+                        pinSetupModal.classList.remove('hidden');
+                        setTimeout(() => { setPinLength(6); setupPinInputs(); document.querySelectorAll('.pin-input')[0]?.focus(); }, 50);
+                    } else { window.location.href = data.redirect_url || '/'; }
+                } else {
+                    alert('Verifikasi gagal: ' + (data.error || 'Kode OTP salah'));
+                    document.querySelector("#waStep2 .otp-field").classList.remove("hidden");
+                    verifyOtpBtn.classList.remove("hidden");
+                    otpError.textContent = data.error || 'Kode OTP salah';
+                    otpError.classList.remove('hidden');
+                    resetOtpInputs();
+                }
+            })
+            .catch(err => { console.error(err); alert('Terjadi kesalahan'); location.reload(); });
+        }
+
+        // ==================== WHATSAPP LOGIN ====================
+        whatsappLoginBtn.addEventListener('click', () => {
+            whatsappModal.classList.remove('hidden');
+            waStep1.classList.remove('hidden');
+            waStep2.classList.add('hidden');
+            waPhoneNumber.value = '';
+            waPhoneError.classList.add('hidden');
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.innerHTML = 'Kirim ulang kode';
+            fetch('/auth/cancel-wa-login/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+        });
+        
+        function closeWhatsAppModal() {
+            whatsappModal.classList.add('hidden');
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            fetch('/auth/cancel-wa-login/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+        }
+        whatsappModal.addEventListener('click', (e) => { if (e.target === whatsappModal) closeWhatsAppModal(); });
+        
+        whatsappLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phoneNumber = waPhoneNumber.value.trim();
+            if (!phoneNumber || !/^[0-9]{10,13}$/.test(phoneNumber)) { waPhoneError.classList.remove('hidden'); return; }
+            waPhoneError.classList.add('hidden');
+            waLoading.classList.remove('hidden');
+            sendWaCodeBtn.disabled = true;
+            try {
+                const res = await fetch('/auth/send-wa-otp/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ phone_number: phoneNumber })
+                });
+                const data = await res.json();
+                waLoading.classList.add('hidden');
+                sendWaCodeBtn.disabled = false;
+                if (data.success) {
+                    waStep1.classList.add('hidden');
+                    waStep2.classList.remove('hidden');
+                    setTimeout(() => { setupOtpInputs(); resetOtpInputs(); }, 50);
+                    otpError.classList.add('hidden');
+                    document.getElementById("otpVerifyingLoading").classList.add("hidden");
+                    verifyOtpBtn.classList.remove("hidden");
+                } else {
+                    const waitMatch = (data.error || '').match(/Tunggu (\d+) detik/);
+                    if (waitMatch) { alert(data.error); startCooldown(parseInt(waitMatch[1]), resendOtpBtn, 'Kirim ulang kode'); }
+                    else { alert(data.error || 'Gagal mengirim kode'); }
+                }
+            } catch (err) { waLoading.classList.add('hidden'); sendWaCodeBtn.disabled = false; alert('Gagal mengirim kode'); }
+        });
+        
+        verifyOtpBtn.addEventListener('click', triggerOtpVerification);
+        
+        resendOtpBtn.addEventListener('click', async () => {
+            if (resendOtpBtn.disabled) return;
+            resendOtpBtn.disabled = true;
+            resendOtpBtn.textContent = 'Mengirim...';
+            try {
+                const res = await fetch('/auth/resend-wa-otp/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Kode verifikasi baru telah dikirim');
+                    resetOtpInputs();
+                    otpError.classList.add('hidden');
+                    document.querySelector("#waStep2 .otp-field").classList.remove("hidden");
+                    verifyOtpBtn.classList.remove("hidden");
+                } else {
+                    const waitMatch = (data.error || '').match(/Tunggu (\d+) detik/);
+                    if (waitMatch) { startCooldown(parseInt(waitMatch[1]), resendOtpBtn, 'Kirim ulang kode'); alert(data.error); }
+                    else { alert(data.error || 'Gagal mengirim ulang'); resendOtpBtn.disabled = false; resendOtpBtn.textContent = 'Kirim ulang kode'; }
+                }
+            } catch (err) { resendOtpBtn.disabled = false; resendOtpBtn.textContent = 'Kirim ulang kode'; alert('Gagal mengirim ulang'); }
+        });
+        
+        backToPhoneBtn.addEventListener('click', () => {
+            waStep2.classList.add('hidden');
+            waStep1.classList.remove('hidden');
+            waPhoneNumber.value = '';
+            waPhoneNumber.focus();
+            resetOtpInputs();
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            resendOtpBtn.disabled = false;
+            resendOtpBtn.innerHTML = 'Kirim ulang kode';
+            fetch('/auth/cancel-wa-login/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+        });
+
+        // ==================== PIN SETUP ====================
+        function setPinLength(length) {
+            currentPinLength = length;
+            const pinInputs = document.querySelectorAll('#pinSetupModal .pin-input');
+            pinInputs.forEach((input, index) => {
+                if (index < length) { input.disabled = false; input.classList.remove('opacity-50', 'bg-gray-100'); }
+                else { input.disabled = true; input.value = ''; input.classList.add('opacity-50', 'bg-gray-100'); }
+            });
+            currentPinValue = '';
+            ['pin4Btn', 'pin5Btn', 'pin6Btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('bg-teracotta', 'text-white');
+            });
+            if (length === 4) document.getElementById('pin4Btn')?.classList.add('bg-teracotta', 'text-white');
+            else if (length === 5) document.getElementById('pin5Btn')?.classList.add('bg-teracotta', 'text-white');
+            else document.getElementById('pin6Btn')?.classList.add('bg-teracotta', 'text-white');
+        }
+
+        function setupPinInputs() {
+            const pinInputs = document.querySelectorAll('#pinSetupModal .pin-input');
+            function updatePinValue() { let pin = ''; pinInputs.forEach(i => { if (i.value) pin += i.value; }); currentPinValue = pin; return pin; }
+            function moveToNext(i) { const next = pinInputs[i + 1]; if (next && i + 1 < currentPinLength) { next.disabled = false; next.focus(); } }
+            function moveToPrev(i) { const prev = pinInputs[i - 1]; if (prev) { prev.value = ''; prev.focus(); } }
+            pinInputs.forEach((input, index) => {
+                input.removeEventListener('input', input._h);
+                input._h = (e) => {
+                    let v = e.target.value;
+                    if (v && !/^\d$/.test(v)) { e.target.value = ''; return; }
+                    if (v && v.length > 1) { v = v.charAt(v.length - 1); e.target.value = v; }
+                    if (v && index < currentPinLength - 1) moveToNext(index);
+                    updatePinValue();
+                    if (updatePinValue().length === currentPinLength) document.getElementById('savePinBtn')?.click();
+                };
+                input.addEventListener('input', input._h);
+                input.addEventListener('focus', () => input.select());
+            });
+        }
+
+        document.getElementById('pin4Btn')?.addEventListener('click', () => setPinLength(4));
+        document.getElementById('pin5Btn')?.addEventListener('click', () => setPinLength(5));
+        document.getElementById('pin6Btn')?.addEventListener('click', () => setPinLength(6));
+        
+        document.getElementById('togglePinSetupVisibility')?.addEventListener('click', function() {
+            const inputs = document.querySelectorAll('#pinSetupModal .pin-input');
+            const icon = this.querySelector('i'), text = this.querySelector('span');
+            isPinSetupVisible = !isPinSetupVisible;
+            inputs.forEach(i => i.type = isPinSetupVisible ? 'text' : 'password');
+            icon.className = isPinSetupVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+            text.textContent = isPinSetupVisible ? 'Sembunyikan PIN' : 'Lihat PIN';
+        });
+        
+        document.getElementById('savePinBtn')?.addEventListener('click', async () => {
+            if (!currentPinValue || currentPinValue.length < 4 || currentPinValue.length > 6 || !/^\d+$/.test(currentPinValue)) {
+                document.getElementById('pinSetupError').textContent = `PIN harus ${currentPinLength} digit angka`;
+                document.getElementById('pinSetupError').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('pinSetupError').classList.add('hidden');
+            const btn = document.getElementById('savePinBtn');
+            btn.disabled = true; btn.textContent = 'Menyimpan...';
+            try {
+                const res = await fetch('/auth/set-security-pin/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ pin: currentPinValue })
+                });
+                const data = await res.json();
+                if (data.success) window.location.href = data.redirect_url || '/';
+                else { document.getElementById('pinSetupError').textContent = data.error; document.getElementById('pinSetupError').classList.remove('hidden'); btn.disabled = false; btn.textContent = 'Simpan PIN'; }
+            } catch (err) { document.getElementById('pinSetupError').textContent = 'Terjadi kesalahan'; document.getElementById('pinSetupError').classList.remove('hidden'); btn.disabled = false; btn.textContent = 'Simpan PIN'; }
+        });
+        
+        document.getElementById('cancelPinSetupBtn')?.addEventListener('click', () => {
+            pinSetupModal.classList.add('hidden');
+            waStep2.classList.add('hidden'); waStep1.classList.remove('hidden');
+            waPhoneNumber.value = ''; waPhoneNumber.focus(); resetOtpInputs();
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            fetch('/auth/cancel-wa-login/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+        });
+
+        // ==================== PIN VERIFY ====================
+        function setupPinVerifyInputs() {
+            const inputs = document.querySelectorAll('#pinVerifyModal .pin-verify-input');
+            let len = 6;
+            function update() { let pin = ''; inputs.forEach(i => { if (i.value) pin += i.value; }); return pin; }
+            function moveNext(i) { const next = inputs[i + 1]; if (next && i + 1 < len) { next.disabled = false; next.focus(); } }
+            inputs.forEach((input, idx) => {
+                input.removeEventListener('input', input._h);
+                input._h = (e) => {
+                    let v = e.target.value;
+                    if (v && !/^\d$/.test(v)) { e.target.value = ''; return; }
+                    if (v && v.length > 1) { v = v.charAt(v.length - 1); e.target.value = v; }
+                    if (v && idx < len - 1) moveNext(idx);
+                    if (update().length === len) document.getElementById('verifyPinBtn')?.click();
+                };
+                input.addEventListener('input', input._h);
+                input.addEventListener('focus', () => input.select());
+            });
+        }
+        
+        document.getElementById('togglePinVerifyVisibility')?.addEventListener('click', function() {
+            const inputs = document.querySelectorAll('#pinVerifyModal .pin-verify-input');
+            const icon = this.querySelector('i'), text = this.querySelector('span');
+            isPinVerifyVisible = !isPinVerifyVisible;
+            inputs.forEach(i => i.type = isPinVerifyVisible ? 'text' : 'password');
+            icon.className = isPinVerifyVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+            text.textContent = isPinVerifyVisible ? 'Sembunyikan PIN' : 'Lihat PIN';
+        });
+        
+        document.getElementById('verifyPinBtn')?.addEventListener('click', async () => {
+            let pin = '';
+            document.querySelectorAll('#pinVerifyModal .pin-verify-input').forEach(i => { if (i.value) pin += i.value; });
+            if (!pin || pin.length < 4 || pin.length > 6 || !/^\d+$/.test(pin)) {
+                document.getElementById('pinVerifyError').textContent = 'PIN harus 4-6 digit angka';
+                document.getElementById('pinVerifyError').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('pinVerifyError').classList.add('hidden');
+            const btn = document.getElementById('verifyPinBtn');
+            btn.disabled = true; btn.textContent = 'Memverifikasi...';
+            try {
+                const res = await fetch('/auth/verify-security-pin/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ pin: pin })
+                });
+                const data = await res.json();
+                if (data.success) window.location.href = data.redirect_url || '/';
+                else {
+                    document.getElementById('pinVerifyError').textContent = data.error;
+                    document.getElementById('pinVerifyError').classList.remove('hidden');
+                    btn.disabled = false; btn.textContent = 'Verifikasi & Masuk';
+                    document.querySelectorAll('#pinVerifyModal .pin-verify-input').forEach(i => { i.value = ''; i.disabled = true; });
+                    document.querySelectorAll('#pinVerifyModal .pin-verify-input')[0].disabled = false;
+                    document.querySelectorAll('#pinVerifyModal .pin-verify-input')[0]?.focus();
+                    if (data.remaining_attempts) document.getElementById('pinAttemptsLeft').textContent = `Sisa percobaan: ${data.remaining_attempts}`;
+                }
+            } catch (err) { document.getElementById('pinVerifyError').textContent = 'Terjadi kesalahan'; btn.disabled = false; btn.textContent = 'Verifikasi & Masuk'; }
+        });
+        
+        document.getElementById('cancelPinVerifyBtn')?.addEventListener('click', () => {
+            pinVerifyModal.classList.add('hidden');
+            waStep2.classList.add('hidden'); waStep1.classList.remove('hidden');
+            waPhoneNumber.value = ''; waPhoneNumber.focus(); resetOtpInputs();
+            if (cooldownInterval) clearInterval(cooldownInterval);
+            fetch('/auth/cancel-wa-login/', { method: 'POST', headers: { 'X-CSRFToken': getCookie('csrftoken') } });
+        });
+
+        // ==================== FORGOT PIN ====================
+        document.getElementById('forgotPinLink')?.addEventListener('click', () => {
+            pinVerifyModal.classList.add('hidden');
+            forgotPinModal.classList.remove('hidden');
+            document.getElementById('forgotPinStep1').classList.remove('hidden');
+            document.getElementById('forgotPinStep2').classList.add('hidden');
+            document.getElementById('forgotPinStep3').classList.add('hidden');
+            document.getElementById('forgotPinPhone').value = '';
+        });
+        
+        document.getElementById('sendForgotPinOtpBtn')?.addEventListener('click', async () => {
+            const phone = document.getElementById('forgotPinPhone').value.trim();
+            if (!phone || !/^[0-9]{10,13}$/.test(phone)) {
+                document.getElementById('forgotPinPhoneError').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('forgotPinPhoneError').classList.add('hidden');
+            const btn = document.getElementById('sendForgotPinOtpBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            try {
+                const res = await fetch('/auth/forgot-pin/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ phone_number: phone })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('forgotPinStep1').classList.add('hidden');
+                    document.getElementById('forgotPinStep2').classList.remove('hidden');
+                    setupForgotOtpInputs();
+                    resetForgotOtpInputs();
+                } else { alert(data.error || 'Gagal mengirim kode'); }
+            } catch (err) { alert('Terjadi kesalahan'); }
+            finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Kode Verifikasi'; }
+        });
+        
+        function setupForgotOtpInputs() {
+            const inputs = document.querySelectorAll('.forgot-otp-input');
+            function update() { let val = ''; inputs.forEach(i => { if (i.value) val += i.value; }); document.getElementById('forgotOtpCode').value = val; return val; }
+            function moveNext(i) { const next = inputs[i + 1]; if (next) { next.disabled = false; next.focus(); } }
+            inputs.forEach((input, idx) => {
+                input.removeEventListener('input', input._h);
+                input._h = (e) => {
+                    let v = e.target.value;
+                    if (v && !/^\d$/.test(v)) { e.target.value = ''; return; }
+                    if (v && v.length > 1) { v = v.charAt(v.length - 1); e.target.value = v; }
+                    if (v && idx < 5) moveNext(idx);
+                    if (update().length === 6) document.getElementById('verifyForgotOtpBtn')?.click();
+                };
+                input.addEventListener('input', input._h);
+                input.addEventListener('focus', () => input.select());
+            });
+        }
+        
+        function resetForgotOtpInputs() {
+            const inputs = document.querySelectorAll('.forgot-otp-input');
+            inputs.forEach((i, idx) => { i.value = ''; i.disabled = idx !== 0; });
+            if (inputs[0]) inputs[0].focus();
+            document.getElementById('forgotOtpCode').value = '';
+        }
+        
+        document.getElementById('verifyForgotOtpBtn')?.addEventListener('click', async () => {
+            const otp = document.getElementById('forgotOtpCode').value;
+            if (otp.length !== 6) {
+                document.getElementById('forgotOtpError').textContent = 'Masukkan 6 digit kode OTP';
+                document.getElementById('forgotOtpError').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('forgotOtpError').classList.add('hidden');
+            const btn = document.getElementById('verifyForgotOtpBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+            try {
+                const res = await fetch('/auth/forgot-pin-verify/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ otp_code: otp })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('forgotPinStep2').classList.add('hidden');
+                    document.getElementById('forgotPinStep3').classList.remove('hidden');
+                    setupNewPinInputs();
+                    setNewPinLength(6);
+                } else {
+                    document.getElementById('forgotOtpError').textContent = data.error;
+                    document.getElementById('forgotOtpError').classList.remove('hidden');
+                    resetForgotOtpInputs();
+                }
+            } catch (err) { document.getElementById('forgotOtpError').textContent = 'Terjadi kesalahan'; document.getElementById('forgotOtpError').classList.remove('hidden'); }
+            finally { btn.disabled = false; btn.innerHTML = 'Verifikasi & Lanjutkan'; }
+        });
+        
+        document.getElementById('resendForgotOtpBtn')?.addEventListener('click', async () => {
+            const phone = document.getElementById('forgotPinPhone').value;
+            if (!phone) return;
+            const btn = document.getElementById('resendForgotOtpBtn');
+            btn.disabled = true; btn.textContent = 'Mengirim...';
+            try {
+                const res = await fetch('/auth/forgot-pin/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ phone_number: phone })
+                });
+                const data = await res.json();
+                if (data.success) { alert('Kode baru telah dikirim'); resetForgotOtpInputs(); }
+                else { alert(data.error || 'Gagal mengirim ulang'); }
+            } catch (err) { alert('Gagal mengirim ulang'); }
+            finally { btn.disabled = false; btn.textContent = 'Kirim ulang kode'; }
+        });
+        
+        document.getElementById('backToForgotPhoneBtn')?.addEventListener('click', () => {
+            document.getElementById('forgotPinStep2').classList.add('hidden');
+            document.getElementById('forgotPinStep1').classList.remove('hidden');
+        });
+        
+        document.getElementById('cancelForgotPinBtn')?.addEventListener('click', () => {
+            forgotPinModal.classList.add('hidden');
+            pinVerifyModal.classList.remove('hidden');
+        });
+        
+        // New PIN setup for forgot
+        function setNewPinLength(length) {
+            newPinLength = length;
+            const inputs = document.querySelectorAll('.new-pin-input');
+            inputs.forEach((input, idx) => {
+                if (idx < length) { input.disabled = false; input.classList.remove('opacity-50', 'bg-gray-100'); }
+                else { input.disabled = true; input.value = ''; input.classList.add('opacity-50', 'bg-gray-100'); }
+            });
+            newPinValue = '';
+            ['newPin4Btn', 'newPin5Btn', 'newPin6Btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('bg-teracotta', 'text-white');
+            });
+            if (length === 4) document.getElementById('newPin4Btn')?.classList.add('bg-teracotta', 'text-white');
+            else if (length === 5) document.getElementById('newPin5Btn')?.classList.add('bg-teracotta', 'text-white');
+            else document.getElementById('newPin6Btn')?.classList.add('bg-teracotta', 'text-white');
+        }
+        
+        function setupNewPinInputs() {
+            const inputs = document.querySelectorAll('.new-pin-input');
+            function update() { let pin = ''; inputs.forEach(i => { if (i.value) pin += i.value; }); newPinValue = pin; return pin; }
+            function moveNext(i) { const next = inputs[i + 1]; if (next && i + 1 < newPinLength) { next.disabled = false; next.focus(); } }
+            inputs.forEach((input, idx) => {
+                input.removeEventListener('input', input._h);
+                input._h = (e) => {
+                    let v = e.target.value;
+                    if (v && !/^\d$/.test(v)) { e.target.value = ''; return; }
+                    if (v && v.length > 1) { v = v.charAt(v.length - 1); e.target.value = v; }
+                    if (v && idx < newPinLength - 1) moveNext(idx);
+                    if (update().length === newPinLength) document.getElementById('saveNewPinBtn')?.click();
+                };
+                input.addEventListener('input', input._h);
+                input.addEventListener('focus', () => input.select());
+            });
+        }
+        
+        document.getElementById('newPin4Btn')?.addEventListener('click', () => setNewPinLength(4));
+        document.getElementById('newPin5Btn')?.addEventListener('click', () => setNewPinLength(5));
+        document.getElementById('newPin6Btn')?.addEventListener('click', () => setNewPinLength(6));
+        
+        document.getElementById('toggleNewPinVisibility')?.addEventListener('click', function() {
+            const inputs = document.querySelectorAll('.new-pin-input');
+            const icon = this.querySelector('i'), text = this.querySelector('span');
+            isNewPinVisible = !isNewPinVisible;
+            inputs.forEach(i => i.type = isNewPinVisible ? 'text' : 'password');
+            icon.className = isNewPinVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+            text.textContent = isNewPinVisible ? 'Sembunyikan PIN' : 'Lihat PIN';
+        });
+        
+        document.getElementById('saveNewPinBtn')?.addEventListener('click', async () => {
+            if (!newPinValue || newPinValue.length < 4 || newPinValue.length > 6 || !/^\d+$/.test(newPinValue)) {
+                document.getElementById('newPinError').textContent = `PIN harus ${newPinLength} digit angka`;
+                document.getElementById('newPinError').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('newPinError').classList.add('hidden');
+            const btn = document.getElementById('saveNewPinBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            try {
+                const res = await fetch('/auth/forgot-pin-set/', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                    body: JSON.stringify({ pin: newPinValue })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('PIN berhasil diubah! Silakan login kembali.');
+                    forgotPinModal.classList.add('hidden');
+                    waStep2.classList.add('hidden'); waStep1.classList.remove('hidden');
+                    waPhoneNumber.value = ''; waPhoneNumber.focus(); resetOtpInputs();
+                } else {
+                    document.getElementById('newPinError').textContent = data.error;
+                    document.getElementById('newPinError').classList.remove('hidden');
+                    btn.disabled = false; btn.innerHTML = 'Simpan PIN Baru';
+                }
+            } catch (err) {
+                document.getElementById('newPinError').textContent = 'Terjadi kesalahan';
+                document.getElementById('newPinError').classList.remove('hidden');
+                btn.disabled = false; btn.innerHTML = 'Simpan PIN Baru';
+            }
+        });
+
+        // ==================== LOGIN & REGISTER HANDLERS ====================
+        loginTabBtn.addEventListener('click', () => setActiveTab('login'));
+        registerTabBtn.addEventListener('click', () => setActiveTab('register'));
+        switchToRegisterBtn.addEventListener('click', () => setActiveTab('register'));
+        switchToLoginBtn.addEventListener('click', () => setActiveTab('login'));
+        
+        document.querySelectorAll('.toggle-password').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                if (input.type === 'password') { input.type = 'text'; this.classList.remove('fa-eye-slash'); this.classList.add('fa-eye'); }
+                else { input.type = 'password'; this.classList.remove('fa-eye'); this.classList.add('fa-eye-slash'); }
+            });
+        });
+        
+        document.getElementById('loginUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            hideError('loginUsernameError'); hideError('loginPasswordError');
+            if (!username) { showError('loginUsernameError', 'Email/Username wajib diisi'); return; }
+            if (!password) { showError('loginPasswordError', 'Kata sandi wajib diisi'); return; }
+            this.submit();
+        });
+        
+        document.getElementById('registerUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let valid = true;
+            const fullname = document.getElementById('regFullname').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            const agree = document.getElementById('agreeTerms').checked;
+            hideError('regNameError'); hideError('regPhoneError'); hideError('regEmailError');
+            hideError('regUsernameError'); hideError('regPasswordError'); hideError('regConfirmError'); hideError('termsError');
+            if (!fullname) { showError('regNameError', 'Nama lengkap wajib diisi'); valid = false; }
+            if (phone && !/^[0-9]{10,13}$/.test(phone)) { showError('regPhoneError', 'Nomor HP tidak valid'); valid = false; }
+            if (!email) { showError('regEmailError', 'Email wajib diisi'); valid = false; }
+            else if (!/^\S+@\S+\.\S+$/.test(email)) { showError('regEmailError', 'Format email salah'); valid = false; }
+            if (!username) { showError('regUsernameError', 'Username wajib diisi'); valid = false; }
+            if (!password) { showError('regPasswordError', 'Kata sandi harus diisi'); valid = false; }
+            else if (password.length < 6) { showError('regPasswordError', 'Kata sandi minimal 6 karakter'); valid = false; }
+            if (password !== confirm) { showError('regConfirmError', 'Konfirmasi sandi tidak cocok'); valid = false; }
+            if (!agree) { showError('termsError', 'Harap setujui syarat & ketentuan'); valid = false; }
+            if (valid) { successModal.classList.remove('hidden'); this.reset(); }
+        });
+        
+        closeModalBtn.addEventListener('click', () => { successModal.classList.add('hidden'); setActiveTab('login'); });
+        successModal.addEventListener('click', (e) => { if (e.target === successModal) { successModal.classList.add('hidden'); setActiveTab('login'); } });
+        
+        setTimeout(() => { document.querySelectorAll('.message').forEach(msg => msg.remove()); }, 5000);
+    </script>
+</body>
+</html>

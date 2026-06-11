@@ -1,0 +1,523 @@
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.models import User
+from django.conf import settings
+from django.utils import timezone
+from apps.core.wa_service import wa_service
+from apps.core.models import Profile, WhatsAppOTP
+from django.core.cache import cache
+import json
+import re
+import time
+import logging
+import hashlib
+import hmac
+
+logger = logging.getLogger(__name__)
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('core:index')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(request, user)
+                messages.success(request, f'Selamat datang kembali, {username}!')
+                next_url = request.GET.get('next', 'core:index')
+                return redirect(next_url)
+        messages.error(request, 'Username atau password salah.')
+    
+    form = AuthenticationForm()
+    return render(request, 'accounts/login.html', {'form': form})
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('core:index')
+    
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            phone = request.POST.get('phone', '')
+            if phone:
+                profile, _ = Profile.objects.get_or_create(user=user)
+                profile.phone_number = phone
+                profile.save()
+            login(request, user)
+            messages.success(request, 'Akun berhasil dibuat! Selamat bergabung.')
+            return redirect('core:index')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    
+    form = UserCreationForm()
+    return render(request, 'accounts/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'Anda telah logout.')
+    return redirect('core:index')
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def generate_device_fingerprint(request):
+    """Generate device fingerprint dari request"""
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    accept_language = request.META.get('HTTP_ACCEPT_LANGUAGE', '')
+    ip_address = get_client_ip(request)
+    
+    fingerprint_data = f"{user_agent}|{accept_language}|{ip_address}"
+    
+    fingerprint = hmac.new(
+        settings.SECRET_KEY.encode(),
+        fingerprint_data.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    return fingerprint
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def send_wa_otp(request):
+    """Kirim OTP ke WhatsApp - Step 1"""
+    try:
+        data = json.loads(request.body)
+        phone_number = data.get('phone_number', '').strip()
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Nomor WhatsApp wajib diisi'})
+        
+        if not re.match(r'^[0-9]{10,13}$', phone_number):
+            return JsonResponse({'success': False, 'error': 'Format nomor tidak valid (10-13 digit)'})
+        
+        # Rate limiting per IP
+        client_ip = get_client_ip(request)
+        ip_key = f"otp_ip_{client_ip}"
+        ip_count = cache.get(ip_key, 0)
+        
+        if ip_count >= 10:
+            return JsonResponse({'success': False, 'error': 'Terlalu banyak permintaan. Coba lagi nanti.'})
+        
+        # Kirim OTP
+        result = wa_service.send_otp(phone_number)
+        
+        if result['success']:
+            # Simpan state di session server
+            request.session['wa_phone'] = phone_number
+            request.session['wa_step'] = 'awaiting_otp'
+            request.session['wa_time'] = int(time.time())
+            
+            cache.set(ip_key, ip_count + 1, 3600)
+            return JsonResponse({'success': True, 'message': 'Kode OTP telah dikirim'})
+        else:
+            error_msg = result.get('error', 'Gagal mengirim OTP')
+            # Kirim error message dengan sisa waktu tunggu jika ada
+            return JsonResponse({'success': False, 'error': error_msg})
+            
+    except Exception as e:
+        logger.error(f"Send OTP error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def verify_wa_otp(request):
+    """Verifikasi OTP - Step 2"""
+    try:
+        data = json.loads(request.body)
+        otp_code = data.get('otp_code', '').strip()
+        
+        phone_number = request.session.get('wa_phone')
+        step = request.session.get('wa_step')
+        init_time = request.session.get('wa_time')
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan masukkan nomor lagi.'})
+        
+        if step != 'awaiting_otp':
+            return JsonResponse({'success': False, 'error': 'Sesi tidak valid. Mulai dari awal.'})
+        
+        # Session timeout 10 menit
+        if init_time and (int(time.time()) - init_time > 600):
+            request.session.pop('wa_phone', None)
+            request.session.pop('wa_step', None)
+            request.session.pop('wa_time', None)
+            return JsonResponse({'success': False, 'error': 'Sesi kadaluarsa. Silakan mulai dari awal.'})
+        
+        if not otp_code or len(otp_code) != 6 or not otp_code.isdigit():
+            return JsonResponse({'success': False, 'error': 'Kode OTP harus 6 digit angka'})
+        
+        # Verifikasi OTP ke database
+        success, message = wa_service.verify_otp(phone_number, otp_code)
+        
+        if not success:
+            return JsonResponse({'success': False, 'error': message})
+        
+        # OTP valid, cek apakah user sudah punya PIN
+        formatted_number = wa_service._format_phone_number(phone_number)
+        short_number = formatted_number[-10:]
+        username = f"wa_{short_number}"
+        
+        try:
+            user = User.objects.get(username=username)
+            profile = user.profile
+            has_pin = bool(profile.security_pin)
+        except (User.DoesNotExist, Profile.DoesNotExist):
+            has_pin = False
+            user = None
+        
+        if has_pin and user:
+            # User sudah punya PIN, minta PIN
+            request.session['wa_step'] = 'awaiting_pin'
+            request.session['wa_user_id'] = user.id
+            return JsonResponse({
+                'success': True, 
+                'requires_pin': True,
+                'message': 'Verifikasi OTP berhasil. Masukkan PIN keamanan Anda.'
+            })
+        else:
+            # User baru, minta buat PIN
+            request.session['wa_step'] = 'awaiting_pin_setup'
+            request.session['wa_temp_phone'] = phone_number
+            request.session['wa_temp_formatted'] = formatted_number
+            request.session['wa_temp_short'] = short_number
+            request.session['wa_temp_username'] = username
+            return JsonResponse({
+                'success': True,
+                'requires_pin_setup': True,
+                'message': 'Verifikasi OTP berhasil. Buat PIN keamanan untuk akun Anda.'
+            })
+        
+    except Exception as e:
+        logger.error(f"Verify OTP error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def resend_wa_otp(request):
+    """Kirim ulang OTP"""
+    try:
+        phone_number = request.session.get('wa_phone')
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan masukkan nomor lagi.'})
+        
+        result = wa_service.send_otp(phone_number)
+        
+        if result['success']:
+            request.session['wa_time'] = int(time.time())
+            return JsonResponse({'success': True, 'message': 'Kode OTP baru telah dikirim'})
+        else:
+            return JsonResponse({'success': False, 'error': result.get('error', 'Gagal mengirim ulang')})
+            
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def cancel_wa_login(request):
+    """Batal login - clear session"""
+    request.session.pop('wa_phone', None)
+    request.session.pop('wa_step', None)
+    request.session.pop('wa_time', None)
+    request.session.pop('wa_user_id', None)
+    request.session.pop('wa_temp_phone', None)
+    request.session.pop('wa_temp_formatted', None)
+    request.session.pop('wa_temp_short', None)
+    request.session.pop('wa_temp_username', None)
+    request.session.pop('wa_pin_attempts', None)
+    return JsonResponse({'success': True})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def set_security_pin(request):
+    """Set PIN keamanan untuk user baru (WhatsApp login)"""
+    try:
+        data = json.loads(request.body)
+        pin = data.get('pin', '').strip()
+        
+        if not pin or len(pin) < 4 or len(pin) > 6 or not pin.isdigit():
+            return JsonResponse({'success': False, 'error': 'PIN harus 4-6 digit angka'})
+        
+        # Ambil data dari session
+        phone_number = request.session.get('wa_temp_phone')
+        formatted_number = request.session.get('wa_temp_formatted')
+        short_number = request.session.get('wa_temp_short')
+        username = request.session.get('wa_temp_username')
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan mulai dari awal.'})
+        
+        # Buat user baru
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={
+                'email': f"{short_number}@wa.user",
+                'first_name': '0' + formatted_number[2:],
+                'last_name': ''
+            }
+        )
+        
+        if created:
+            user.set_unusable_password()
+            user.save()
+        
+        # Set PIN di profile
+        profile, _ = Profile.objects.get_or_create(user=user)
+        profile.phone_number = phone_number
+        profile.full_phone = formatted_number
+        profile.security_pin = pin
+        profile.pin_set_at = timezone.now()
+        profile.save()
+        
+        # Langsung login user
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+        
+        # Clear session
+        request.session.pop('wa_phone', None)
+        request.session.pop('wa_step', None)
+        request.session.pop('wa_time', None)
+        request.session.pop('wa_temp_phone', None)
+        request.session.pop('wa_temp_formatted', None)
+        request.session.pop('wa_temp_short', None)
+        request.session.pop('wa_temp_username', None)
+        
+        return JsonResponse({'success': True, 'redirect_url': '/'})
+        
+    except Exception as e:
+        logger.error(f"Set PIN error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def verify_security_pin(request):
+    """Verifikasi PIN keamanan saat login untuk user lama"""
+    try:
+        data = json.loads(request.body)
+        pin = data.get('pin', '').strip()
+        
+        if not pin or len(pin) < 4 or len(pin) > 6 or not pin.isdigit():
+            return JsonResponse({'success': False, 'error': 'PIN harus 4-6 digit angka'})
+        
+        user_id = request.session.get('wa_user_id')
+        
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan mulai dari awal.'})
+        
+        try:
+            user = User.objects.get(id=user_id)
+            profile = user.profile
+        except (User.DoesNotExist, Profile.DoesNotExist):
+            return JsonResponse({'success': False, 'error': 'Akun tidak ditemukan'})
+        
+        # Catat percobaan PIN
+        attempt_key = f"pin_attempts_{user_id}"
+        attempts = cache.get(attempt_key, 0)
+        
+        # Verifikasi PIN
+        if not profile.security_pin or profile.security_pin != pin:
+            attempts += 1
+            cache.set(attempt_key, attempts, 300)  # 5 menit timeout
+            
+            if attempts >= 3:
+                request.session.flush()
+                return JsonResponse({'success': False, 'error': 'Terlalu banyak percobaan gagal. Silakan mulai dari awal.'})
+            
+            remaining = 3 - attempts
+            return JsonResponse({'success': False, 'error': f'PIN salah. Sisa {remaining} percobaan.'})
+        
+        # PIN benar, reset attempts
+        cache.delete(attempt_key)
+        
+        # Simpan device fingerprint
+        fingerprint = generate_device_fingerprint(request)
+        profile.device_fingerprint = fingerprint
+        profile.save()
+        
+        # Login user
+        user.backend = 'django.contrib.auth.backends.ModelBackend'
+        login(request, user)
+        
+        # Clear session
+        request.session.pop('wa_phone', None)
+        request.session.pop('wa_step', None)
+        request.session.pop('wa_time', None)
+        request.session.pop('wa_user_id', None)
+        request.session.pop('wa_pin_attempts', None)
+        
+        return JsonResponse({'success': True, 'redirect_url': '/'})
+        
+    except Exception as e:
+        logger.error(f"Verify PIN error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+# apps/accounts/views.py - Tambahkan fungsi berikut
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_pin_request(request):
+    """Request reset PIN - kirim OTP ke WhatsApp"""
+    try:
+        data = json.loads(request.body)
+        phone_number = data.get('phone_number', '').strip()
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Nomor WhatsApp wajib diisi'})
+        
+        # Format nomor
+        formatted_number = wa_service._format_phone_number(phone_number)
+        short_number = formatted_number[-10:]
+        username = f"wa_{short_number}"
+        
+        # Cek apakah user ada
+        try:
+            user = User.objects.get(username=username)
+            profile = user.profile
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Nomor WhatsApp tidak terdaftar'})
+        
+        # Kirim OTP untuk reset PIN
+        result = wa_service.send_otp(phone_number)
+        
+        if result['success']:
+            # Simpan session untuk reset PIN
+            request.session['reset_pin_phone'] = phone_number
+            request.session['reset_pin_step'] = 'awaiting_otp'
+            request.session['reset_pin_time'] = int(time.time())
+            return JsonResponse({'success': True, 'message': 'Kode verifikasi telah dikirim ke WhatsApp Anda'})
+        else:
+            return JsonResponse({'success': False, 'error': result.get('error', 'Gagal mengirim kode')})
+            
+    except Exception as e:
+        logger.error(f"Forgot PIN request error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_pin_verify_otp(request):
+    """Verifikasi OTP untuk reset PIN"""
+    try:
+        data = json.loads(request.body)
+        otp_code = data.get('otp_code', '').strip()
+        
+        phone_number = request.session.get('reset_pin_phone')
+        step = request.session.get('reset_pin_step')
+        init_time = request.session.get('reset_pin_time')
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan mulai dari awal.'})
+        
+        if step != 'awaiting_otp':
+            return JsonResponse({'success': False, 'error': 'Sesi tidak valid'})
+        
+        if init_time and (int(time.time()) - init_time > 600):
+            request.session.pop('reset_pin_phone', None)
+            request.session.pop('reset_pin_step', None)
+            request.session.pop('reset_pin_time', None)
+            return JsonResponse({'success': False, 'error': 'Sesi kadaluarsa. Silakan mulai dari awal.'})
+        
+        if not otp_code or len(otp_code) != 6:
+            return JsonResponse({'success': False, 'error': 'Kode OTP harus 6 digit'})
+        
+        # Verifikasi OTP
+        success, message = wa_service.verify_otp(phone_number, otp_code)
+        
+        if not success:
+            return JsonResponse({'success': False, 'error': message})
+        
+        # OTP valid, lanjut ke set PIN baru
+        request.session['reset_pin_step'] = 'awaiting_new_pin'
+        return JsonResponse({'success': True, 'message': 'Verifikasi berhasil. Silakan buat PIN baru.'})
+        
+    except Exception as e:
+        logger.error(f"Forgot PIN verify OTP error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_pin_set_new(request):
+    """Set PIN baru setelah verifikasi OTP"""
+    try:
+        data = json.loads(request.body)
+        new_pin = data.get('pin', '').strip()
+        
+        phone_number = request.session.get('reset_pin_phone')
+        step = request.session.get('reset_pin_step')
+        
+        if not phone_number:
+            return JsonResponse({'success': False, 'error': 'Sesi habis. Silakan mulai dari awal.'})
+        
+        if step != 'awaiting_new_pin':
+            return JsonResponse({'success': False, 'error': 'Sesi tidak valid'})
+        
+        if not new_pin or len(new_pin) < 4 or len(new_pin) > 6 or not new_pin.isdigit():
+            return JsonResponse({'success': False, 'error': 'PIN harus 4-6 digit angka'})
+        
+        # Cari user
+        formatted_number = wa_service._format_phone_number(phone_number)
+        short_number = formatted_number[-10:]
+        username = f"wa_{short_number}"
+        
+        try:
+            user = User.objects.get(username=username)
+            profile = user.profile
+            profile.security_pin = new_pin
+            profile.pin_set_at = timezone.now()
+            profile.save()
+            
+            # Clear session
+            request.session.pop('reset_pin_phone', None)
+            request.session.pop('reset_pin_step', None)
+            request.session.pop('reset_pin_time', None)
+            
+            # Kirim notifikasi PIN berhasil diubah
+            wa_service.send_message(phone_number, f"""*{wa_service.sender_name} - PIN Berhasil Diubah*
+
+Halo,
+
+PIN keamanan akun Anda telah berhasil diubah.
+
+Jika Anda tidak melakukan perubahan ini, segera hubungi tim support kami.
+
+Terima kasih,
+*Tim {wa_service.sender_name}* 🔒""")
+            
+            return JsonResponse({'success': True, 'message': 'PIN berhasil diubah. Silakan login kembali.'})
+            
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Akun tidak ditemukan'})
+            
+    except Exception as e:
+        logger.error(f"Forgot PIN set new error: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Terjadi kesalahan'})

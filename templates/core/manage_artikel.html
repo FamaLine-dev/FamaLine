@@ -1,0 +1,688 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manajemen Artikel - FamaLine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-input:focus {
+        outline: none;
+        border-color: #C97A63;
+        box-shadow: 0 0 0 3px rgba(201, 122, 99, 0.1);
+    }
+    .preview-box {
+        background: #FFFDF9;
+        border: 1px solid #F5E6C9;
+        border-radius: 12px;
+        padding: 20px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    .preview-box img {
+        max-width: 100%;
+        border-radius: 12px;
+        margin: 1rem 0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #FDF6E2;
+    }
+    .action-btn {
+        transition: all 0.2s;
+    }
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #D1FAE5;
+        color: #065F46;
+    }
+    .modal {
+        transition: all 0.3s ease;
+    }
+    .image-preview {
+        position: relative;
+        display: inline-block;
+    }
+    .image-preview img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid #F5E6C9;
+    }
+    .remove-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: #EF4444;
+        color: white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .remove-btn:hover {
+        background: #DC2626;
+        transform: scale(1.1);
+    }
+    .tab-btn {
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .tab-btn.active {
+        background-color: #C97A63;
+        color: white;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .upload-area {
+        transition: all 0.2s;
+    }
+    .upload-area.drag-over {
+        border-color: #C97A63;
+        background-color: #FDF6E2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-5 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-charcoal">📋 Manajemen Artikel</h1>
+            <p class="text-gray-500 mt-1">Kelola semua artikel (Tambah, Edit, Hapus)</p>
+        </div>
+        <a href="{% url 'core:manage_artikel_logout' %}" class="bg-red-500 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-red-600 transition flex items-center gap-2">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6 border-b border-cream-200">
+        <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold text-gray-600 hover:text-teracotta transition active" data-tab="tambah">
+            <i class="fas fa-plus-circle mr-2"></i> Tambah Artikel
+        </button>
+        <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold text-gray-600 hover:text-teracotta transition" data-tab="daftar">
+            <i class="fas fa-list mr-2"></i> Daftar Artikel
+        </button>
+    </div>
+
+    <!-- ==================== TAB: TAMBAH ARTIKEL ==================== -->
+    <div id="tab-tambah" class="tab-content active">
+        <div class="bg-white rounded-2xl shadow-xl border border-cream-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-teracotta to-warmbrown px-6 py-5 text-white">
+                <h2 class="text-xl font-bold">Tambah Artikel Baru</h2>
+            </div>
+
+            <form id="tambahForm" method="post" enctype="multipart/form-data" class="p-6 md:p-8">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Form Kiri -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Judul Artikel <span class="text-red-500">*</span></label>
+                            <input type="text" name="judul" id="judul" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+                            <select name="kategori" id="kategori" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="balita">👶 Balita & Anak</option>
+                                <option value="psikologi">🧠 Psikologi Anak</option>
+                                <option value="remaja">📱 Remaja & Digital</option>
+                                <option value="keluarga">❤️ Keluarga Sakinah</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Konten Artikel <span class="text-red-500">*</span></label>
+                            <textarea name="konten" id="konten" rows="15" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 font-mono text-sm"></textarea>
+                            <div class="flex flex-wrap gap-4 mt-2 text-xs text-gray-400">
+                                <span><i class="fas fa-code"></i> Gunakan &lt;h2&gt; untuk sub judul</span>
+                                <span><i class="fas fa-list"></i> Gunakan &lt;ul&gt; & &lt;li&gt; untuk daftar</span>
+                                <span><i class="fas fa-quote-right"></i> Gunakan &lt;blockquote&gt; untuk kutipan</span>
+                            </div>
+                        </div>
+
+                        <!-- Upload Gambar -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Gambar Sampul (Opsional)</label>
+                            <div class="border-2 border-dashed border-cream-300 rounded-xl p-6 text-center cursor-pointer upload-area" id="uploadArea">
+                                <input type="file" name="gambar" id="gambar" class="hidden" accept="image/*">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500">Klik atau drag gambar ke sini</p>
+                                <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, GIF (Maks 2MB)</p>
+                            </div>
+                            <div id="imagePreview" class="hidden mt-3">
+                                <div class="image-preview">
+                                    <img id="previewImg" src="#" alt="Preview">
+                                    <button type="button" id="removeImage" class="remove-btn"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Kanan -->
+                    <div class="space-y-6">
+                        <div class="bg-cream-50 rounded-xl p-5 border border-cream-200">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <i class="fas fa-eye text-teracotta"></i> Preview Artikel
+                            </h3>
+                            <div class="preview-box" id="previewBox">
+                                <p class="text-gray-400 text-center py-10">Preview akan muncul di sini...</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition">
+                                <i class="fas fa-save mr-2"></i> Simpan Artikel
+                            </button>
+                            <button type="reset" class="px-6 py-3 border border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 transition">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== TAB: DAFTAR ARTIKEL ==================== -->
+    <div id="tab-daftar" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-lg border border-cream-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full table-hover">
+                    <thead class="bg-cream-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">No</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Judul</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Kategori</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Penulis</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Tanggal</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-cream-100">
+                        {% for artikel in artikel_list %}
+                        <tr class="hover:bg-cream-50 transition">
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ forloop.counter }}</td>
+                            <td class="px-6 py-4">
+                                <div>
+                                    <a href="{% url 'core:artikel_detail' artikel.slug %}" class="font-semibold text-charcoal hover:text-teracotta transition">
+                                        {{ artikel.judul }}
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="status-badge">
+                                    {% if artikel.kategori == 'balita' %}👶 Balita
+                                    {% elif artikel.kategori == 'psikologi' %}🧠 Psikologi
+                                    {% elif artikel.kategori == 'remaja' %}📱 Remaja
+                                    {% else %}❤️ Keluarga{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ artikel.penulis }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ artikel.created_at|date:"d M Y" }}</td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="openEditModal('{{ artikel.slug }}')" class="action-btn w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition" title="Edit">
+                                        <i class="fas fa-edit text-sm"></i>
+                                    </button>
+                                    <button onclick="openDeleteModal('{{ artikel.slug }}', '{{ artikel.judul|escapejs }}')" class="action-btn w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center text-red-600 hover:bg-red-600 hover:text-white transition" title="Hapus">
+                                        <i class="fas fa-trash-alt text-sm"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <i class="fas fa-newspaper text-5xl text-gray-300 mb-3"></i>
+                                <p class="text-gray-400">Belum ada artikel. Silakan tambah artikel baru.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL EDIT ARTIKEL ==================== -->
+<div id="editModal" class="fixed inset-0 bg-black/60 z-[200] opacity-0 invisible transition-all duration-300 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-cream-200 px-6 py-4 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-charcoal">
+                <i class="fas fa-edit text-blue-600 mr-2"></i> Edit Artikel
+            </h3>
+            <button onclick="closeEditModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <i class="fas fa-times text-gray-500"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="editForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="edit_slug" id="edit_slug">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Form Kiri -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Judul Artikel</label>
+                            <input type="text" name="edit_judul" id="edit_judul" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
+                            <select name="edit_kategori" id="edit_kategori" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                                <option value="balita">👶 Balita & Anak</option>
+                                <option value="psikologi">🧠 Psikologi Anak</option>
+                                <option value="remaja">📱 Remaja & Digital</option>
+                                <option value="keluarga">❤️ Keluarga Sakinah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Konten Artikel</label>
+                            <textarea name="edit_konten" id="edit_konten" rows="12" required class="form-input w-full px-4 py-3 rounded-xl border border-cream-300 font-mono text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Penulis</label>
+                            <input type="text" name="edit_penulis" id="edit_penulis" class="form-input w-full px-4 py-3 rounded-xl border border-cream-300">
+                        </div>
+                        
+                        <!-- Upload Gambar Edit -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Gambar Sampul</label>
+                            
+                            <!-- Gambar Saat Ini -->
+                            <div id="editCurrentImage" class="hidden mb-3">
+                                <p class="text-xs text-gray-500 mb-2">Gambar Saat Ini:</p>
+                                <div class="image-preview">
+                                    <img id="editCurrentImg" src="#" alt="Current image">
+                                    <button type="button" id="removeCurrentImage" class="remove-btn"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Area -->
+                            <div class="border-2 border-dashed border-cream-300 rounded-xl p-6 text-center cursor-pointer upload-area" id="editUploadArea">
+                                <input type="file" name="edit_gambar" id="editGambar" class="hidden" accept="image/*">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500">Klik atau drag gambar baru untuk mengganti</p>
+                                <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, GIF (Maks 2MB)</p>
+                            </div>
+                            
+                            <!-- Preview Gambar Baru -->
+                            <div id="editImagePreview" class="hidden mt-3">
+                                <div class="image-preview">
+                                    <img id="editPreviewImg" src="#" alt="Preview">
+                                    <button type="button" id="removeEditImage" class="remove-btn"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Preview Kanan -->
+                    <div class="space-y-6">
+                        <div class="bg-cream-50 rounded-xl p-5 border border-cream-200 sticky top-6">
+                            <h3 class="font-bold mb-3 flex items-center gap-2">
+                                <i class="fas fa-eye text-teracotta"></i> Preview Artikel
+                            </h3>
+                            <div class="preview-box" id="editPreviewBox">
+                                <p class="text-gray-400 text-center py-10">Preview akan muncul di sini...</p>
+                            </div>
+                            <button type="submit" class="w-full mt-4 bg-teracotta text-white font-bold py-3 rounded-xl hover:bg-opacity-90 transition">
+                                <i class="fas fa-save mr-2"></i> Update Artikel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL HAPUS ARTIKEL ==================== -->
+<div id="deleteModal" class="fixed inset-0 bg-black/60 z-[200] opacity-0 invisible transition-all duration-300 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full">
+        <div class="p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-charcoal mb-2">Hapus Artikel?</h3>
+                <p class="text-gray-500 mb-4">Apakah Anda yakin ingin menghapus artikel <strong id="deleteJudul"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                <form id="deleteForm" method="post" action="">
+                    {% csrf_token %}
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeDeleteModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50">Batal</button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            <i class="fas fa-trash-alt mr-2"></i> Hapus
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== UTILITY FUNCTIONS ====================
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ==================== TAB ====================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        });
+    });
+
+    // ==================== TAMBAH ARTIKEL ====================
+    let currentImageUrl = null;
+    const judulInput = document.getElementById('judul');
+    const kontenInput = document.getElementById('konten');
+    const previewBox = document.getElementById('previewBox');
+
+    function updatePreview() {
+        const judul = judulInput?.value.trim() || '';
+        const konten = kontenInput?.value || '';
+        let html = '';
+        if (currentImageUrl) html += `<img src="${currentImageUrl}" alt="Gambar Sampul" style="max-width:100%; border-radius:12px; margin-bottom:1rem;">`;
+        if (judul) html += `<h2 style="font-size:1.5rem; font-weight:700; margin:1rem 0 0.5rem;">${escapeHtml(judul)}</h2>`;
+        if (konten) html += `<div>${konten}</div>`;
+        else html += `<p class="text-gray-400 text-center py-10">Konten akan muncul di sini...</p>`;
+        if (previewBox) previewBox.innerHTML = html;
+    }
+
+    if (judulInput) judulInput.addEventListener('input', updatePreview);
+    if (kontenInput) kontenInput.addEventListener('input', updatePreview);
+
+    // Upload Gambar Tambah
+    const uploadArea = document.getElementById('uploadArea');
+    const gambarInput = document.getElementById('gambar');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImage = document.getElementById('removeImage');
+
+    if (uploadArea) {
+        uploadArea.addEventListener('click', () => gambarInput.click());
+        
+        gambarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImageUrl = e.target.result;
+                    previewImg.src = currentImageUrl;
+                    imagePreview.classList.remove('hidden');
+                    uploadArea.classList.add('hidden');
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                gambarInput.files = e.dataTransfer.files;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImageUrl = e.target.result;
+                    previewImg.src = currentImageUrl;
+                    imagePreview.classList.remove('hidden');
+                    uploadArea.classList.add('hidden');
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (removeImage) {
+        removeImage.addEventListener('click', () => {
+            gambarInput.value = '';
+            currentImageUrl = null;
+            imagePreview.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
+            updatePreview();
+        });
+    }
+
+    updatePreview();
+
+    // ==================== EDIT ARTIKEL ====================
+    let currentEditSlug = null;
+    let currentEditImageUrl = null;
+    let isImageChanged = false;
+
+    function updateEditPreview() {
+        const judul = document.getElementById('edit_judul')?.value.trim() || '';
+        const konten = document.getElementById('edit_konten')?.value || '';
+        const editPreviewBox = document.getElementById('editPreviewBox');
+        let html = '';
+        if (currentEditImageUrl) html += `<img src="${currentEditImageUrl}" alt="Gambar Sampul" style="max-width:100%; border-radius:12px; margin-bottom:1rem;">`;
+        if (judul) html += `<h2 style="font-size:1.5rem; font-weight:700; margin:1rem 0 0.5rem;">${escapeHtml(judul)}</h2>`;
+        if (konten) html += `<div>${konten}</div>`;
+        else html += `<p class="text-gray-400 text-center py-10">Konten akan muncul di sini...</p>`;
+        if (editPreviewBox) editPreviewBox.innerHTML = html;
+    }
+
+    const editJudul = document.getElementById('edit_judul');
+    const editKonten = document.getElementById('edit_konten');
+    if (editJudul) editJudul.addEventListener('input', updateEditPreview);
+    if (editKonten) editKonten.addEventListener('input', updateEditPreview);
+
+    function openEditModal(slug) {
+        currentEditSlug = slug;
+        isImageChanged = false;
+        
+        fetch(`/get-artikel/${slug}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('edit_slug').value = data.slug;
+                    document.getElementById('edit_judul').value = data.judul;
+                    document.getElementById('edit_kategori').value = data.kategori;
+                    document.getElementById('edit_konten').value = data.konten;
+                    document.getElementById('edit_penulis').value = data.penulis;
+                    
+                    // Handle gambar
+                    const editCurrentImageDiv = document.getElementById('editCurrentImage');
+                    const editCurrentImg = document.getElementById('editCurrentImg');
+                    
+                    if (data.gambar_url) {
+                        currentEditImageUrl = data.gambar_url;
+                        editCurrentImg.src = currentEditImageUrl;
+                        editCurrentImageDiv.classList.remove('hidden');
+                    } else {
+                        currentEditImageUrl = null;
+                        editCurrentImageDiv.classList.add('hidden');
+                    }
+                    
+                    document.getElementById('editUploadArea').classList.remove('hidden');
+                    document.getElementById('editImagePreview').classList.add('hidden');
+                    document.getElementById('editGambar').value = '';
+                    
+                    updateEditPreview();
+                    
+                    document.getElementById('editModal').classList.remove('opacity-0', 'invisible');
+                    document.getElementById('editModal').classList.add('opacity-100', 'visible');
+                    document.body.style.overflow = 'hidden';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('opacity-0', 'invisible');
+        document.getElementById('editModal').classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = '';
+    }
+
+    // Hapus gambar yang sudah ada
+    const removeCurrentImageBtn = document.getElementById('removeCurrentImage');
+    if (removeCurrentImageBtn) {
+        removeCurrentImageBtn.addEventListener('click', () => {
+            currentEditImageUrl = null;
+            isImageChanged = true;
+            document.getElementById('editCurrentImage').classList.add('hidden');
+            
+            let hiddenInput = document.getElementById('delete_image_flag');
+            if (!hiddenInput) {
+                hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'delete_image';
+                hiddenInput.id = 'delete_image_flag';
+                hiddenInput.value = 'true';
+                document.getElementById('editForm').appendChild(hiddenInput);
+            } else {
+                hiddenInput.value = 'true';
+            }
+            updateEditPreview();
+        });
+    }
+
+    // Upload gambar baru edit
+    const editUploadArea = document.getElementById('editUploadArea');
+    const editGambarInput = document.getElementById('editGambar');
+    const editImagePreviewDiv = document.getElementById('editImagePreview');
+    const editPreviewImgEl = document.getElementById('editPreviewImg');
+    const removeEditImageBtn = document.getElementById('removeEditImage');
+
+    if (editUploadArea) {
+        editUploadArea.addEventListener('click', () => editGambarInput.click());
+        
+        editGambarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                isImageChanged = true;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentEditImageUrl = e.target.result;
+                    editPreviewImgEl.src = currentEditImageUrl;
+                    editImagePreviewDiv.classList.remove('hidden');
+                    editUploadArea.classList.add('hidden');
+                    document.getElementById('editCurrentImage').classList.add('hidden');
+                    updateEditPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        editUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            editUploadArea.classList.add('drag-over');
+        });
+        editUploadArea.addEventListener('dragleave', () => editUploadArea.classList.remove('drag-over'));
+        editUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            editUploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                editGambarInput.files = e.dataTransfer.files;
+                isImageChanged = true;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentEditImageUrl = e.target.result;
+                    editPreviewImgEl.src = currentEditImageUrl;
+                    editImagePreviewDiv.classList.remove('hidden');
+                    editUploadArea.classList.add('hidden');
+                    document.getElementById('editCurrentImage').classList.add('hidden');
+                    updateEditPreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (removeEditImageBtn) {
+        removeEditImageBtn.addEventListener('click', () => {
+            editGambarInput.value = '';
+            currentEditImageUrl = null;
+            editImagePreviewDiv.classList.add('hidden');
+            editUploadArea.classList.remove('hidden');
+            updateEditPreview();
+        });
+    }
+
+    // Submit edit form
+    document.getElementById('editForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        formData.append('is_image_changed', isImageChanged);
+        
+        fetch(`/edit-artikel/${currentEditSlug}/`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+        }).then(response => response.json()).then(data => {
+            if (data.success) {
+                alert('Artikel berhasil diupdate!');
+                location.reload();
+            } else {
+                alert('Gagal update: ' + data.error);
+            }
+        });
+    });
+
+    document.getElementById('editModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('editModal')) closeEditModal();
+    });
+
+    // ==================== HAPUS ARTIKEL ====================
+    function openDeleteModal(slug, judul) {
+        document.getElementById('deleteJudul').textContent = judul;
+        document.getElementById('deleteForm').action = `/delete-artikel/${slug}/`;
+        document.getElementById('deleteModal').classList.remove('opacity-0', 'invisible');
+        document.getElementById('deleteModal').classList.add('opacity-100', 'visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('opacity-0', 'invisible');
+        document.getElementById('deleteModal').classList.remove('opacity-100', 'visible');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('deleteModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('deleteModal')) closeDeleteModal();
+    });
+</script>
+{% endblock %}

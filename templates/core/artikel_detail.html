@@ -1,0 +1,337 @@
+{% extends 'base.html' %} {% load static %} {% block title %}{{ artikel.judul }}
+| FamaLine{% endblock %} {% block extra_css %}
+<style>
+  .article-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3d3a35;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .article-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #3d3a35;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .article-content p {
+    color: #4b5563;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+  .article-content ul,
+  .article-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    color: #4b5563;
+  }
+  .article-content li {
+    margin-bottom: 0.5rem;
+  }
+  .article-content blockquote {
+    border-left: 4px solid #c97a63;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #6b7280;
+  }
+  .share-btn {
+    position: relative;
+  }
+  .share-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .share-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  @media (max-width: 640px) {
+    .share-btn::after {
+      display: none;
+    }
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+{% endblock %} {% block content %}
+<!-- Breadcrumb -->
+<div class="bg-cream-200/30 py-3">
+  <div class="max-w-7xl mx-auto px-5 lg:px-8">
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+      <a href="{% url 'core:index' %}" class="hover:text-teracotta transition">
+        <i class="fas fa-home"></i> Beranda
+      </a>
+      <i class="fas fa-chevron-right text-xs"></i>
+      <a
+        href="{% url 'core:artikel_list' %}"
+        class="hover:text-teracotta transition"
+      >
+        Artikel
+      </a>
+      <i class="fas fa-chevron-right text-xs"></i>
+      <span class="text-teracotta font-medium truncate"
+        >{{ artikel.judul }}</span
+      >
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-5 lg:px-8 py-10">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <!-- Left Column: Article -->
+    <div
+      class="lg:col-span-2 bg-white rounded-2xl border border-cream-300 shadow-sm overflow-hidden"
+    >
+      {% if artikel.gambar %}
+      <div class="h-[300px] md:h-[400px] w-full overflow-hidden relative">
+        <img
+          src="{{ artikel.gambar.url }}"
+          alt="{{ artikel.judul }}"
+          class="w-full h-full object-cover"
+        />
+        <span
+          class="absolute top-4 left-4 bg-teracotta text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-md"
+        >
+          {{ artikel.get_kategori_display }}
+        </span>
+      </div>
+      {% else %}
+      <div
+        class="h-[300px] md:h-[400px] w-full bg-gradient-to-br from-teracotta/30 to-cream-300 flex items-center justify-center relative"
+      >
+        {% if artikel.kategori == 'balita' %}
+        <i class="fas fa-child text-8xl text-teracotta/50"></i>
+        {% elif artikel.kategori == 'psikologi' %}
+        <i class="fas fa-brain text-8xl text-teracotta/50"></i>
+        {% elif artikel.kategori == 'remaja' %}
+        <i class="fas fa-mobile-alt text-8xl text-teracotta/50"></i>
+        {% else %}
+        <i class="fas fa-heart text-8xl text-teracotta/50"></i>
+        {% endif %}
+        <span
+          class="absolute top-4 left-4 bg-teracotta text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-md"
+        >
+          {{ artikel.get_kategori_display }}
+        </span>
+      </div>
+      {% endif %}
+
+      <!-- Article Header -->
+      <div class="p-6 md:p-10">
+        <h1
+          class="text-2xl md:text-3xl lg:text-4xl font-bold text-charcoal mb-4 leading-tight"
+        >
+          {{ artikel.judul }}
+        </h1>
+
+        <!-- Metadata -->
+        <div
+          class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 border-b border-cream-200 pb-4 mb-4"
+        >
+          <span class="inline-flex items-center">
+            <i class="far fa-calendar-alt text-teracotta mr-1.5"></i>
+            {{ artikel.created_at|date:"d F Y" }}
+          </span>
+          <span class="inline-flex items-center">
+            <i class="far fa-clock text-teracotta mr-1.5"></i>
+            {{ menit_membaca }} menit membaca
+          </span>
+          <span class="inline-flex items-center">
+            <i class="far fa-user text-teracotta mr-1.5"></i>
+            {{ artikel.penulis }}
+          </span>
+          <span class="inline-flex items-center">
+            <i class="far fa-eye text-teracotta mr-1.5"></i>
+            {{ artikel.dibaca }}x dibaca
+          </span>
+        </div>
+
+        <!-- Share Buttons -->
+        <div class="flex gap-2 mb-2">
+          <button
+            onclick="shareArticle('facebook')"
+            data-tooltip="Share Facebook"
+            class="share-btn w-10 h-10 bg-[#1877F2]/10 rounded-full flex items-center justify-center text-[#1877F2] hover:bg-[#1877F2] hover:text-white transition duration-300"
+          >
+            <i class="fab fa-facebook-f"></i>
+          </button>
+          <button
+            onclick="shareArticle('twitter')"
+            data-tooltip="Share X"
+            class="share-btn w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-black hover:bg-black hover:text-white transition duration-300"
+          >
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button
+            onclick="shareArticle('whatsapp')"
+            data-tooltip="Share WhatsApp"
+            class="share-btn w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500 hover:bg-green-500 hover:text-white transition duration-300"
+          >
+            <i class="fab fa-whatsapp"></i>
+          </button>
+          <button
+            onclick="copyLink()"
+            data-tooltip="Salin Link"
+            class="share-btn w-10 h-10 bg-teracotta/10 rounded-full flex items-center justify-center text-teracotta hover:bg-teracotta hover:text-white transition duration-300"
+          >
+            <i class="fas fa-link"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Article Content -->
+      <div class="px-6 md:px-10 pb-6 md:pb-10">
+        <div class="article-content text-gray-700 leading-relaxed">
+          {{ artikel.konten|safe|linebreaks }}
+        </div>
+
+        <!-- Category Footer -->
+        <div
+          class="mt-10 pt-6 border-t border-cream-300 flex items-center gap-2"
+        >
+          <span class="text-sm font-semibold text-gray-500">Kategori:</span>
+          <a
+            href="{% url 'core:artikel_list' %}?kategori={{ artikel.kategori }}"
+            class="text-xs bg-cream-200 text-teracotta font-bold px-3 py-1.5 rounded-md hover:bg-teracotta hover:text-white transition duration-300"
+          >
+            {{ artikel.get_kategori_display }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Sidebar -->
+    <div class="space-y-6">
+      <!-- Artikel Terkait -->
+      {% if related_articles %}
+      <div
+        class="bg-white rounded-2xl border border-cream-300 p-6 shadow-sm sticky top-28"
+      >
+        <h3
+          class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2"
+        >
+          <i class="fas fa-newspaper text-teracotta"></i>
+          Artikel Terkait
+        </h3>
+        <div class="space-y-4">
+          {% for related in related_articles %}
+          <a
+            href="{% url 'core:artikel_detail' related.slug %}"
+            class="group block hover:bg-cream-100/50 p-2 -mx-2 rounded-lg transition"
+          >
+            <h4
+              class="font-bold text-charcoal group-hover:text-teracotta transition mb-1 line-clamp-2"
+            >
+              {{ related.judul }}
+            </h4>
+            <p class="text-xs text-gray-400">
+              <i class="far fa-calendar-alt mr-1"></i> {{
+              related.created_at|date:"d M Y" }}
+              <span class="mx-1">•</span>
+              <i class="far fa-clock mr-1"></i> {{ related.menit_membaca }}
+              menit membaca
+            </p>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- CTA Banner -->
+      <div
+        class="bg-gradient-to-r from-teracotta/10 via-cream-200 to-teracotta/5 rounded-2xl p-6 text-center border border-teracotta/20"
+      >
+        <div class="text-4xl mb-3">💬</div>
+        <h3 class="text-xl font-bold text-charcoal mb-2">
+          Butuh Konsultasi Lebih Lanjut?
+        </h3>
+        <p class="text-sm text-gray-600 mb-4 leading-relaxed">
+          Diskusikan masalah tumbuh kembang dan psikologi anak Anda bersama
+          psikolog ahli kami.
+        </p>
+        <a
+          href="{% url 'core:konsultasi' %}"
+          class="inline-block bg-teracotta text-white px-6 py-3 rounded-xl font-bold hover:bg-teracotta/80 hover:shadow-lg transition duration-300"
+        >
+          Booking Konsultasi <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div
+  id="toast"
+  class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-5 py-3 rounded-lg text-sm opacity-0 transition-opacity duration-300 pointer-events-none z-[200] shadow-lg"
+>
+  <i class="fas fa-check-circle text-green-400 mr-2"></i>
+  Link berhasil disalin!
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  function shareArticle(platform) {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(
+      document.querySelector("h1")?.innerText || document.title,
+    );
+    let shareUrl = "";
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
+        break;
+      case "whatsapp":
+        shareUrl = `https://wa.me/?text=${title}%20${url}`;
+        break;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, "_blank", "width=600,height=400");
+    }
+  }
+
+  function copyLink() {
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.remove("opacity-0");
+        toast.classList.add("opacity-100");
+        setTimeout(() => {
+          toast.classList.remove("opacity-100");
+          toast.classList.add("opacity-0");
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("Gagal menyalin link:", err);
+        alert("Gagal menyalin link. Silakan salin manual dari address bar.");
+      });
+  }
+</script>
+{% endblock %}
