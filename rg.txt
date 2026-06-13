@@ -20,3 +20,10 @@ do
     break
   fi
 done
+
+if [ $LD_FOUND -eq 0 ]; then
+  echo "  FATAL: ld-linux-x86-64.so.2 not found anywhere!"
+  echo "  Init will fail with ENOEXEC (-8). Aborting."
+  rm -rf $WDIR $unsorted
+  exit 1
+fi
