@@ -1,0 +1,22 @@
+# Kernel tidak bisa resolve double symlink: lib64->lib->usr/lib
+# Ini penyebab ENOEXEC (-8) saat exec /init di Ventoy
+# =====================================================
+echo ""
+echo "=== Installing ld-linux (critical for ENOEXEC fix) ==="
+LD_FOUND=0
+for ld_candidate in \
+  /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+  /usr/lib/ld-linux-x86-64.so.2 \
+  /lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+  /lib64/ld-linux-x86-64.so.2 \
+  /lib/ld-linux-x86-64.so.2
+do
+  if [ -e "$ld_candidate" ]; then
+    # cp -L: resolve semua symlink, copy file fisik aslinya
+    cp -L "$ld_candidate" "$WDIR/lib64/ld-linux-x86-64.so.2"
+    cp -L "$ld_candidate" "$WDIR/usr/lib/ld-linux-x86-64.so.2"
+    echo "  OK: Copied ld-linux from $ld_candidate (physical file)"
+    LD_FOUND=1
+    break
+  fi
+done
