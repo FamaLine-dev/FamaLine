@@ -1,3 +1,216 @@
+#!/bin/bash
+# mkinitramfs for LFS Live ISO
+# Compatible: Ventoy, Rufus, USB, CD/DVD
+# FIXED: lib64 physical dir + ld-linux physical file (no double symlink = no ENOEXEC)
+# FIXED: losetup -l syntax for Ventoy loop detection
+# FIXED: interpreter chain verification before pack
+
+copy()
+{
+  local file
+
+  if [ "$2" = "lib" ]; then
+    file=$(PATH=/usr/lib type -p $1 2>/dev/null)
+  else
+    file=$(type -p $1 2>/dev/null)
+  fi
+
+  if [ -n "$file" ] ; then
+    cp "$file" "$WDIR/usr/$2"
+  else
+    echo "Warning: Missing file: $1"
+  fi
+}
+
+if [ -z "$1" ] ; then
+  INITRAMFS_FILE=initrd.img-no-kmods
+else
+  KERNEL_VERSION=$1
+  INITRAMFS_FILE=initrd.img-$KERNEL_VERSION
+fi
+
+if [ -n "$KERNEL_VERSION" ] && [ ! -d "/lib/modules/$1" ] ; then
+  echo "ERROR: No modules directory: /lib/modules/$1"
+  exit 1
+fi
+
+printf "Creating $INITRAMFS_FILE... \n"
+
+# Binaries wajib ada di initramfs
+binfiles="sh bash cat cp dd killall ls mkdir mknod mount lsblk grep mountpoint"
+binfiles="$binfiles umount sed sleep ln rm uname readlink basename"
+binfiles="$binfiles chmod chown find losetup"
+
+# udevadm
+if   [ -x /usr/bin/udevadm ] ; then binfiles="$binfiles"
+elif [ -x /sbin/udevadm ]    ; then binfiles="$binfiles"
+fi
+
+sbinfiles="modprobe blkid switch_root udevadm"
+
+# udevd — cari di semua lokasi umum
+for f in udevd udevadm; do
+  if   [ -x /usr/sbin/$f ] ; then sbinfiles="$sbinfiles $f"
+  elif [ -x /sbin/$f ]     ; then sbinfiles="$sbinfiles $f"
+  fi
+done
+
+unsorted=$(mktemp /tmp/unsorted.XXXXXXXXXX)
+
+DATADIR=/usr/share/mkinitramfs
+INITIN=init.in
+
+WDIR=$(mktemp -d /tmp/initrd-work.XXXXXXXXXX)
+
+# Buat struktur direktori lengkap
+mkdir -p $WDIR/{dev,run,sys,proc,tmp,tmpmnt,usr/{bin,lib/{firmware,modules},sbin}}
+mkdir -p $WDIR/{mnt,squash,cow/{mod,buffer},.root}
+mkdir -p $WDIR/etc/{modprobe.d,udev/rules.d}
+
+touch $WDIR/etc/modprobe.d/modprobe.conf
+
+# Symlinks standar (FHS compat) — KECUALI lib64, itu harus direktori fisik
+ln -s usr/bin  $WDIR/bin
+ln -s usr/lib  $WDIR/lib
+ln -s usr/sbin $WDIR/sbin
+# JANGAN buat lib64 sebagai symlink! Kernel tidak bisa resolve double symlink
+# lib64 -> lib -> usr/lib akan menyebabkan ENOEXEC saat exec /init
+mkdir -p $WDIR/lib64
+
+# Device nodes minimal
+mknod -m 640 $WDIR/dev/console c 5 1
+mknod -m 664 $WDIR/dev/null    c 1 3
+mknod -m 640 $WDIR/dev/kmsg    c 1 11
+
+# Loop devices — dibutuhkan untuk squashfs dan Ventoy
+for i in 0 1 2 3 4 5 6 7; do
+  mknod -m 660 $WDIR/dev/loop$i b 7 $i
+done
+
+# udev config
+if [ -f /etc/udev/udev.conf ]; then
+  cp /etc/udev/udev.conf $WDIR/etc/udev/udev.conf
+fi
+
+# udev rules
+if [ -d /etc/udev/rules.d ]; then
+  for file in /etc/udev/rules.d/*.rules; do
+    [ -f "$file" ] && cp "$file" "$WDIR/etc/udev/rules.d/"
+  done
+fi
+
+# Firmware (optional)
+if [ -d /lib/firmware ]; then
+  cp -a /lib/firmware $WDIR/usr/lib/ 2>/dev/null || true
+fi
+
+# Validasi init.in ada sebelum install
+if [ ! -f "$DATADIR/$INITIN" ]; then
+  echo ""
+  echo "ERROR: $DATADIR/$INITIN not found!"
+  echo "Jalankan dulu: mkdir -p $DATADIR && cp init.in $DATADIR/init.in"
+  rm -rf $WDIR $unsorted
+  exit 1
+fi
+
+# Install init script
+install -m0755 $DATADIR/$INITIN $WDIR/init
+echo "Installed init from $DATADIR/$INITIN"
+
+# Tambahkan kmod tools jika tersedia
+if [ -n "$KERNEL_VERSION" ] ; then
+  if [ -x /usr/bin/kmod ] ; then
+    binfiles="$binfiles kmod"
+  else
+    binfiles="$binfiles lsmod"
+    sbinfiles="$sbinfiles insmod"
+  fi
+fi
+
+# Install binaries dari /usr/bin atau /bin
+for f in $binfiles ; do
+  if [ -x /usr/bin/$f ]; then
+    ldd /usr/bin/$f 2>/dev/null | sed "s/\t//" | cut -d " " -f1 >> $unsorted
+    copy $f bin
+  elif [ -x /bin/$f ]; then
+    ldd /bin/$f 2>/dev/null | sed "s/\t//" | cut -d " " -f1 >> $unsorted
+    copy $f bin
+  else
+    echo "Warning: $f not found in /usr/bin or /bin"
+  fi
+done
+
+# Install sbinaries dari /usr/sbin atau /sbin
+for f in $sbinfiles ; do
+  if [ -x /usr/sbin/$f ]; then
+    ldd /usr/sbin/$f 2>/dev/null | sed "s/\t//" | cut -d " " -f1 >> $unsorted
+    copy $f sbin
+  elif [ -x /sbin/$f ]; then
+    ldd /sbin/$f 2>/dev/null | sed "s/\t//" | cut -d " " -f1 >> $unsorted
+    copy $f sbin
+  else
+    echo "Warning: $f not found in /usr/sbin or /sbin"
+  fi
+done
+
+# Cari dan copy udevd dari semua lokasi yang mungkin
+UDEVD_FOUND=0
+for udevd_path in \
+  /usr/lib/udev/udevd \
+  /lib/udev/udevd \
+  /usr/lib/systemd/systemd-udevd \
+  /usr/sbin/udevd \
+  /sbin/udevd
+do
+  if [ -x "$udevd_path" ]; then
+    ldd "$udevd_path" 2>/dev/null | sed "s/\t//" | cut -d " " -f1 >> $unsorted
+    case "$udevd_path" in
+      /usr/lib/udev/*)    dest="$WDIR/usr/lib/udev/" ;;
+      /lib/udev/*)        dest="$WDIR/usr/lib/udev/" ;;
+      /usr/lib/systemd/*) mkdir -p "$WDIR/usr/lib/systemd"; dest="$WDIR/usr/lib/systemd/" ;;
+      *)                  dest="$WDIR/usr/sbin/" ;;
+    esac
+    mkdir -p "$dest"
+    cp "$udevd_path" "$dest"
+    echo "Copied udevd from $udevd_path"
+    UDEVD_FOUND=1
+    break
+  fi
+done
+[ $UDEVD_FOUND -eq 0 ] && echo "WARNING: udevd not found anywhere! udev will not work."
+
+# kmod symlinks
+if [ -n "$KERNEL_VERSION" ] && [ -x /usr/bin/kmod ] ; then
+  ln -sf kmod $WDIR/usr/bin/lsmod
+  ln -sf kmod $WDIR/usr/bin/insmod
+  ln -sf kmod $WDIR/usr/bin/modinfo
+fi
+
+# Install shared libraries
+sort $unsorted | uniq | while read library ; do
+  case "$library" in
+    linux-vdso.so*)     continue ;;
+    linux-gate.so*)     continue ;;
+    libsystemd-shared*) continue ;;
+  esac
+
+  lib_file=""
+  for libdir in /usr/lib /lib /usr/lib/x86_64-linux-gnu /lib/x86_64-linux-gnu; do
+    if [ -f "$libdir/$library" ]; then
+      lib_file="$libdir/$library"
+      break
+    fi
+  done
+
+  if [ -n "$lib_file" ]; then
+    cp "$lib_file" "$WDIR/usr/lib/" 2>/dev/null || true
+  else
+    copy $library lib
+  fi
+done
+
+# =====================================================
+# CRITICAL FIX: Copy ld-linux sebagai FILE FISIK ke lib64
 # Kernel tidak bisa resolve double symlink: lib64->lib->usr/lib
 # Ini penyebab ENOEXEC (-8) saat exec /init di Ventoy
 # =====================================================
@@ -27,3 +240,149 @@ if [ $LD_FOUND -eq 0 ]; then
   rm -rf $WDIR $unsorted
   exit 1
 fi
+
+# Copy direktori udev lengkap (rules, helpers, dll)
+for udev_dir in /usr/lib/udev /lib/udev; do
+  if [ -d "$udev_dir" ]; then
+    cp -a "$udev_dir" $WDIR/usr/lib/ 2>/dev/null || true
+    echo "Copied udev directory from $udev_dir"
+  fi
+done
+
+# Install kernel modules
+if [ -n "$KERNEL_VERSION" ]; then
+  echo "Including modules for $KERNEL_VERSION..."
+
+  for modpath in \
+    /lib/modules/$KERNEL_VERSION/kernel/crypto \
+    /lib/modules/$KERNEL_VERSION/kernel/fs \
+    /lib/modules/$KERNEL_VERSION/kernel/lib \
+    /lib/modules/$KERNEL_VERSION/kernel/drivers \
+
+  do
+    [ -d "$modpath" ] && find "$modpath" -type f 2>/dev/null | cpio --make-directories -p --quiet $WDIR
+  done
+
+  # Copy module metadata ke usr/lib dan lib (beberapa modprobe carinya beda)
+  mkdir -p $WDIR/usr/lib/modules/$KERNEL_VERSION
+  mkdir -p $WDIR/lib/modules/$KERNEL_VERSION
+  for f in modules.builtin modules.order modules.builtin.modinfo; do
+    if [ -f /lib/modules/$KERNEL_VERSION/$f ]; then
+      cp /lib/modules/$KERNEL_VERSION/$f $WDIR/usr/lib/modules/$KERNEL_VERSION/ 2>/dev/null || true
+      cp /lib/modules/$KERNEL_VERSION/$f $WDIR/lib/modules/$KERNEL_VERSION/     2>/dev/null || true
+    fi
+  done
+
+  depmod -b $WDIR $KERNEL_VERSION
+fi
+
+# =====================================================
+# Pre-pack verification
+# =====================================================
+echo ""
+echo "=== Pre-pack verification ==="
+
+# Cek /init
+if [ -f "$WDIR/init" ] && [ -x "$WDIR/init" ]; then
+  INTERP=$(head -1 "$WDIR/init")
+  echo "  OK: /init executable, shebang: $INTERP"
+else
+  echo "  FATAL: /init missing or not executable!"
+fi
+
+# Cek sh
+if [ -f "$WDIR/usr/bin/sh" ] || [ -f "$WDIR/usr/bin/bash" ]; then
+  echo "  OK: sh/bash found in usr/bin"
+else
+  echo "  FATAL: sh not found in usr/bin!"
+fi
+
+# Cek lib64/ld-linux — harus FILE, bukan symlink
+if [ -f "$WDIR/lib64/ld-linux-x86-64.so.2" ] && [ ! -L "$WDIR/lib64/ld-linux-x86-64.so.2" ]; then
+  echo "  OK: lib64/ld-linux-x86-64.so.2 (physical file)"
+elif [ -L "$WDIR/lib64/ld-linux-x86-64.so.2" ]; then
+  echo "  WARNING: lib64/ld-linux is a SYMLINK — will cause ENOEXEC on Ventoy!"
+else
+  echo "  FATAL: lib64/ld-linux-x86-64.so.2 MISSING!"
+fi
+
+# Cek lib64 itu sendiri bukan symlink
+if [ -d "$WDIR/lib64" ] && [ ! -L "$WDIR/lib64" ]; then
+  echo "  OK: lib64 is a real directory"
+else
+  echo "  FATAL: lib64 is a symlink or missing!"
+fi
+
+# Cek switch_root
+if [ -f "$WDIR/usr/sbin/switch_root" ]; then
+  echo "  OK: switch_root found"
+else
+  echo "  FATAL: switch_root MISSING!"
+fi
+
+# Cek blkid
+if [ -f "$WDIR/usr/sbin/blkid" ]; then
+  echo "  OK: blkid found"
+else
+  echo "  WARNING: blkid missing"
+fi
+
+# Create initramfs
+echo ""
+echo "=== Packing initramfs ==="
+( cd $WDIR ; find . | cpio -o -H newc --quiet | gzip -9 ) > $INITRAMFS_FILE
+
+SIZE=$(du -sh $INITRAMFS_FILE | cut -f1)
+echo "Done. Output: $INITRAMFS_FILE (size: $SIZE)"
+
+# Verifikasi binary penting
+echo ""
+echo "=== Verifying critical binaries ==="
+for f in \
+  init \
+  usr/bin/sh \
+  usr/bin/mount \
+  usr/bin/lsblk \
+  usr/bin/losetup \
+  usr/sbin/switch_root \
+  usr/sbin/modprobe \
+  usr/bin/udevadm \
+  lib64/ld-linux-x86-64.so.2; do
+  if [ -f "$WDIR/$f" ] && [ ! -L "$WDIR/$f" ]; then
+    echo "  OK (file): /$f"
+  elif [ -L "$WDIR/$f" ]; then
+    echo "  SYMLINK: /$f  <-- verify this is intentional"
+  else
+    echo "  MISSING: /$f  <-- WARNING!"
+  fi
+done
+
+echo ""
+echo "=== Loop device nodes ==="
+for i in 0 1 2 3; do
+  if [ -e "$WDIR/dev/loop$i" ]; then
+    echo "  OK: /dev/loop$i"
+  else
+    echo "  MISSING: /dev/loop$i  <-- WARNING!"
+  fi
+done
+
+# Verifikasi init executable
+if [ -f "$WDIR/init" ]; then
+  PERM=$(stat -c "%a" "$WDIR/init" 2>/dev/null)
+  echo ""
+  echo "=== Init permissions: $PERM (must be 755) ==="
+fi
+
+echo ""
+echo "=== lib64 directory listing ==="
+ls -la "$WDIR/lib64/" 2>/dev/null || echo "lib64 empty or missing!"
+
+echo ""
+echo "=== Symlink check (none of these should be lib64) ==="
+ls -la "$WDIR/" | grep "^l"
+
+# Cleanup
+rm -rf $WDIR $unsorted
+echo ""
+echo "Build complete: $INITRAMFS_FILE"
